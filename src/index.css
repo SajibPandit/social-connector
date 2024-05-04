@@ -1,0 +1,180 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+*,
+html,
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+/*
+.parent {
+  position: relative;
+  min-height: 100vh;
+  Set a minimum height for the parent
+}
+
+
+footer {
+  background-color: #f5f7fa;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 300px;
+}
+ */
+
+footer {
+  background-color: #f5f7fa;
+  height: 25vh;
+}
+
+.footer-logo {
+  font-size: 40px;
+}
+
+.social-media-icons {
+  display: flex;
+  justify-content: center;
+}
+
+.social-media-icon {
+  font-size: 24px;
+  color: #333;
+  margin: 0 10px;
+  transition: all 0.3s ease;
+}
+
+.social-media-icon:hover {
+  color: #007bff;
+  /* Change to your desired hover color */
+  transform: scale(1.2);
+}
+
+.footer-top-links a {
+  margin: 0 20px;
+}
+
+.form-control:focus {
+  border-color: violet;
+  box-shadow: 0 0 0 0.25rem rgba(138, 43, 226, 0.25);
+  /* Optional: Add a box shadow when focused */
+}
+
+/* LoginPage.css */
+.login-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: between;
+}
+
+.image-wrapper {
+  flex: 1;
+  padding-right: 20px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.image-wrapper p {
+  font-size: 18px;
+  margin-top: 20px;
+}
+
+.form-wrapper {
+  flex: 1;
+}
+
+.home-section {
+  height: 100vh;
+  display: flex;
+  justify-content: between;
+  align-items: center;
+  scroll-snap-align: start;
+  /* transition: 1s; */
+}
+
+.home-section:nth-child(1) {
+  background-color: #867070;
+  color: #ffffff;
+}
+
+.home-section:nth-child(1) .outline-secondary {
+  /* background-color: #867070; */
+  color: #ffffff;
+}
+
+.home-section:nth-child(2) {
+  background-color: #7f9f80;
+  color: #ffffff;
+}
+
+.home-section:nth-child(3) {
+  background-color: #f9e897;
+  color: #000;
+}
+
+.home-section:nth-child(4) {
+  background-color: #cee6f3;
+  color: #000;
+}
+
+.home-section:nth-child(5) {
+  background-color: #124076;
+  color: #ffffff;
+}
+
+.home-section:nth-child(5) {
+  background-color: #ffb5da;
+  color: #000;
+}
+
+@media screen and (max-width: 680px) {
+  footer {
+    width: 35vh;
+    width: 100%;
+    height: 100%;
+  }
+
+  .footer-top,
+  .footer-center,
+  .footer-bottom {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  .footer-bottom {
+    padding-top: 20px;
+  }
+
+  .footer-bottom p {
+    text-align: center;
+  }
+  .navbar-collapse.show {
+    background-color: #f5f7fa;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+  }
+  #responsive-navbar-nav {
+    margin-top: 20px;
+    /* transition: 0.5s; */
+  }
+  .navbar-nav .navbar-link {
+    width: 100%;
+  }
+}
+
+#site-navbar {
+  z-index: 999;
+}
+
+.nav-active {
+  color: #000;
+}
