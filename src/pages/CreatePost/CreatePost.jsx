@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Container, Form, Button, Col, Row, Card } from "react-bootstrap";
 import { motion } from "framer-motion";
 import * as yup from "yup";
+import axios from "axios";
 
 function CreatePost() {
   const initialState = {
@@ -11,9 +12,23 @@ function CreatePost() {
     subCategory: "",
     quantity: "",
     amount: "",
+    link: "",
+    deadline: "",
   };
 
   const [data, setData] = useState(initialState);
+  const [allCategory, setAllCategory] = useState([]);
+
+  // Fetching categories and sub categories
+  useEffect(() => {
+    try {
+      axios.get(`${import.meta.env.VITE_BACKEND_URL}/category`).then((res) => {
+        setAllCategory(res?.data?.data);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
 
   const [errors, setErrors] = useState({});
 
@@ -26,8 +41,16 @@ function CreatePost() {
       is: (val) => !!val,
       then: yup.string().required("Subcategory is required"),
     }),
-    quantity: yup.number().positive().required("Quantity is required"),
-    amount: yup.number().positive().required("Amount is required"),
+    quantity: yup
+      .number("Quantity must be number type")
+      .positive("Quantity must be greater than zero")
+      .required("Quantity is required"),
+    amount: yup
+      .number("Amount must be number type")
+      .positive("Amount must be greater than zero")
+      .required("Amount is required"),
+    link: yup.string().url("Invalid URL format").required("Link is required"),
+    deadline: yup.string().required("Deadline is required"),
   });
 
   // Handle form submission
@@ -59,8 +82,7 @@ function CreatePost() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.7 }}
-    >
+      transition={{ duration: 0.7 }}>
       <Container className="items-center">
         <Row>
           <Col md={8} className="mt-5 mx-auto">
@@ -107,8 +129,7 @@ function CreatePost() {
                   as={Col}
                   md={12}
                   controlId="formGender"
-                  className="mt-2 mb-2"
-                >
+                  className="mt-2 mb-2">
                   <Form.Label>Select Category</Form.Label>
                   <Form.Select
                     size="lg"
@@ -117,12 +138,13 @@ function CreatePost() {
                     onChange={(e) =>
                       setData({ ...data, category: e.target.value })
                     }
-                    isInvalid={!!errors.category}
-                  >
+                    isInvalid={!!errors.category}>
                     <option>Select Category</option>
-                    <option value="facebook">Facebook</option>
-                    <option value="youtube">Youtube</option>
-                    <option value="instagram">Instagram</option>
+                    {allCategory?.map((category, i) => (
+                      <option key={i} value={category.id}>
+                        {category?.name}
+                      </option>
+                    ))}
                   </Form.Select>
                   <Form.Control.Feedback type="invalid">
                     {errors.category}
@@ -133,8 +155,7 @@ function CreatePost() {
                   as={Col}
                   md={12}
                   controlId="formGender"
-                  className="mt-2 mb-2"
-                >
+                  className="mt-2 mb-2">
                   <Form.Label>Select Sub Category</Form.Label>
                   <Form.Select
                     size="lg"
@@ -144,8 +165,7 @@ function CreatePost() {
                     onChange={(e) =>
                       setData({ ...data, subCategory: e.target.value })
                     }
-                    isInvalid={!!errors.subCategory}
-                  >
+                    isInvalid={!!errors.subCategory}>
                     <option>Select Sub Category</option>
                     <option value="facebook">Like</option>
                     <option value="youtube">Comments</option>
@@ -153,6 +173,22 @@ function CreatePost() {
                   </Form.Select>
                   <Form.Control.Feedback type="invalid">
                     {errors.subCategory}
+                  </Form.Control.Feedback>
+                </Form.Group>
+
+                <Form.Group className="mb-3" controlId="formBasicEmail">
+                  <Form.Label>Link</Form.Label>
+                  <Form.Control
+                    size="lg"
+                    type="text"
+                    placeholder="Enter Link"
+                    value={data?.link}
+                    onChange={(e) => setData({ ...data, link: e.target.value })}
+                    isInvalid={!!errors.link}
+                  />
+
+                  <Form.Control.Feedback type="invalid">
+                    {errors.link}
                   </Form.Control.Feedback>
                 </Form.Group>
 
@@ -190,17 +226,28 @@ function CreatePost() {
                   </Form.Control.Feedback>
                 </Form.Group>
 
-                <Form.Group controlId="formFileLg" className="mb-3">
-                  <Form.Label>Select Image</Form.Label>
-                  <Form.Control type="file" size="lg" />
+                {/* Date of Birth Input */}
+                <Form.Group controlId="formDob">
+                  <Form.Label>Deadline</Form.Label>
+                  <Form.Control
+                    size="lg"
+                    type="date"
+                    name="deadline"
+                    value={data?.deadline}
+                    isInvalid={!!errors.deadline}
+                    onChange={(e) =>
+                      setData({ ...data, deadline: e.target.value })
+                    }
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.deadline}
+                  </Form.Control.Feedback>
                 </Form.Group>
-
                 <Button
                   variant="primary"
                   size="lg"
                   type="submit"
-                  className="w-100 mt-5"
-                >
+                  className="w-100 mt-5">
                   Create Task
                 </Button>
               </Form>

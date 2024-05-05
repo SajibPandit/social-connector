@@ -178,3 +178,8 @@ footer {
 .nav-active {
   color: #000;
 }
+
+.ytplayer {
+  pointer-events: none;
+  /* position: absolute; */
+  }

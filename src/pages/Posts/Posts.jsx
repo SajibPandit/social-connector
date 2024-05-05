@@ -8,20 +8,44 @@ import axios from "axios";
 function Posts() {
   const [data, setData] = useState({});
   const [allCountry, setAllCountry] = useState([]);
+  const [allCategory, setAllCategory] = useState([]);
 
+  // Fetching categories and sub categories and countries data
   useEffect(() => {
     axios.get("https://restcountries.com/v2/all").then((res) => {
       setAllCountry(res.data);
       console.log(res.data);
     });
+
+    try {
+      axios.get(`${import.meta.env.VITE_BACKEND_URL}/category`).then((res) => {
+        setAllCategory(res?.data?.data);
+      });
+
+      axios.get("https://restcountries.com/v2/all").then((res) => {
+        setAllCountry(res.data);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+
+  // Fetching categories and sub categories
+  useEffect(() => {
+    try {
+      axios.get(`${import.meta.env.VITE_BACKEND_URL}/category`).then((res) => {
+        setAllCategory(res?.data?.data);
+      });
+    } catch (error) {
+      console.log(error);
+    }
   }, []);
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.7 }}
-    >
+      transition={{ duration: 0.7 }}>
       <Container>
         <Row className="mt-3" direction="horizontal" gap={3}>
           <Col md={3} sm={6} className="mt-3 mt-md-0">
@@ -30,12 +54,15 @@ function Posts() {
                 size="lg"
                 aria-label="Default select example"
                 value={data?.category}
-                onChange={(e) => setData({ ...data, category: e.target.value })}
-              >
+                onChange={(e) =>
+                  setData({ ...data, category: e.target.value })
+                }>
                 <option>Select Category</option>
-                <option value="facebook">Facebook</option>
-                <option value="youtube">Youtube</option>
-                <option value="instagram">Instagram</option>
+                {allCategory?.map((category, i) => (
+                  <option key={i} value={category.id}>
+                    {category?.name}
+                  </option>
+                ))}
               </Form.Select>
             </Form.Group>
           </Col>
@@ -49,8 +76,7 @@ function Posts() {
                 value={data?.subCategory}
                 onChange={(e) =>
                   setData({ ...data, subCategory: e.target.value })
-                }
-              >
+                }>
                 <option>Select Sub Category</option>
                 <option value="facebook">Facebook</option>
                 <option value="youtube">Youtube</option>
@@ -65,23 +91,15 @@ function Posts() {
                 size="lg"
                 aria-label="Default select example"
                 value={data?.location}
-                onChange={(e) => setData({ ...data, location: e.target.value })}
-              >
+                onChange={(e) =>
+                  setData({ ...data, location: e.target.value })
+                }>
                 <option>Select Location</option>
-                {allCountry &&
-                  allCountry.map((option) => (
-                    <option value="facebook" key={option?.name}>
-                      <div className="d-flex align-items-center gap-2">
-                        <img
-                          width={30}
-                          height={20}
-                          src={option?.flags?.png}
-                          alt="flag"
-                        />
-                        <p>{option?.name}</p>
-                      </div>
-                    </option>
-                  ))}
+                {allCountry.map((option, i) => (
+                  <option key={i} value={option?.name}>
+                    {option?.name}
+                  </option>
+                ))}
               </Form.Select>
             </Form.Group>
             {/* <Form.Group controlId="formBasicEmail">
@@ -109,8 +127,7 @@ function Posts() {
 
           <Col
             md={1}
-            className="mt-3 mt-md-0 d-flex justify-content-end align-items-center "
-          >
+            className="mt-3 mt-md-0 d-flex justify-content-end align-items-center ">
             <Button size="lg">
               <IoMdSearch />
             </Button>
@@ -120,8 +137,7 @@ function Posts() {
         <Row>
           <Col
             md={12}
-            className="d-flex justify-content-between align-items-center flex-row mt-3"
-          >
+            className="d-flex justify-content-between align-items-center flex-column flex-md-row mt-3">
             <div className="d-flex gap-3">
               <Card className="p-1">
                 <Form.Group
@@ -130,13 +146,11 @@ function Posts() {
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
-                  }}
-                >
+                  }}>
                   <Form.Label></Form.Label>
                   <div
                     style={{ margin: "1px solid #ddd" }}
-                    className="p-0 p-md-2"
-                  >
+                    className="p-2 p-0 p-md-2">
                     Earned Point : 0.00
                   </div>
                 </Form.Group>
@@ -149,13 +163,11 @@ function Posts() {
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
-                  }}
-                >
+                  }}>
                   <Form.Label></Form.Label>
                   <div
                     style={{ margin: "1px solid #ddd" }}
-                    className="p-2 p-0 p-md-2"
-                  >
+                    className="p-2 p-0 p-md-2">
                     Pending Point : 0.00
                   </div>
                 </Form.Group>
@@ -166,14 +178,14 @@ function Posts() {
                 as={Col}
                 md={12}
                 controlId="formGender"
-                className="mt-2 mb-2"
-              >
+                className="mt-2 mb-2">
                 <Form.Select
                   size="lg"
                   aria-label="Default select example"
                   value={data?.sortBy}
-                  onChange={(e) => setData({ ...data, sortBy: e.target.value })}
-                >
+                  onChange={(e) =>
+                    setData({ ...data, sortBy: e.target.value })
+                  }>
                   <option>Sort By</option>
                   <option value="mostRecent">Most Recent</option>
                   <option value="oldPosts">Old Posts</option>

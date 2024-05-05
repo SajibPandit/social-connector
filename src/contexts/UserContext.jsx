@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 
 // Create the context
@@ -9,6 +9,15 @@ export const UserProvider = ({ children }) => {
   // Define the state and setter for user data
   const [user, setUser] = useState(null);
 
+  useEffect(() => {
+    // Load user data from local storage on component mount
+    const storedUser = localStorage.getItem("zozoAuth");
+    console.log(storedUser);
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
   // Function to set user data
   const setUserData = (userData) => {
     setUser(userData);
@@ -17,7 +26,7 @@ export const UserProvider = ({ children }) => {
   // Function to clear user data (e.g., on logout)
   const clearUserData = () => {
     setUser(null);
-    localStorage.removeItem("zozo_auth");
+    localStorage.removeItem("zozoAuth");
   };
 
   // Return the provider component

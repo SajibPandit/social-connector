@@ -14,6 +14,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import UserContext from "../../contexts/UserContext";
+import toast from "react-hot-toast";
 
 function Signup() {
   // Defining initial state
@@ -79,7 +80,7 @@ function Signup() {
       );
 
       // Set user data to ther local storage
-      localStorage.setItem("zozo_auth", response?.data?.data?.token);
+      localStorage.setItem("zozoAuth", JSON.stringify(response?.data?.data));
 
       // // Set user data in context
       setUserData(response?.data?.data);
@@ -90,6 +91,7 @@ function Signup() {
 
       // Reseting state
       setData(initialState);
+      toast.success("User registered and logged in successfully");
 
       // Redirect to home page
       navigate("/");
@@ -124,8 +126,7 @@ function Signup() {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.7 }}
-      style={{ minHeight: "50vh" }}
-    >
+      style={{ minHeight: "50vh" }}>
       <Container className="mb-5 items-center">
         <Row>
           <Col md={6} className="mt-5 mx-auto">
@@ -257,8 +258,7 @@ function Signup() {
                     isInvalid={!!errors.gender}
                     onChange={(e) =>
                       setData({ ...data, gender: e.target.value })
-                    }
-                  >
+                    }>
                     <option>Select Gender</option>
                     <option value="male">Male</option>
                     <option value="female">Female</option>
@@ -274,8 +274,7 @@ function Signup() {
                   variant="primary"
                   size="lg"
                   type="submit"
-                  className="w-100 mt-5"
-                >
+                  className="w-100 mt-5">
                   Submit
                 </Button>
 
@@ -286,8 +285,7 @@ function Signup() {
                     textDecoration: "none",
                     color: "inherit",
                     marginLeft: "10px",
-                  }}
-                >
+                  }}>
                   <p className="text-center">
                     Already have an account? Login Here.
                   </p>

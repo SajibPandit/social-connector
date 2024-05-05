@@ -1,19 +1,17 @@
-import { useContext, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Container, Navbar, Nav, NavDropdown } from "react-bootstrap";
 import Refer from "../../pages/Refer/Refer";
 import UserContext from "../../contexts/UserContext";
 
 function Header() {
-  const [referModalShow, setReferModalShow] = useState(false);
   const handleReferClose = () => setReferModalShow(false);
-  const handleReferShow = () => setReferModalShow(true);
 
-  const { user, setUserData } = useContext(UserContext);
+  const { user } = useContext(UserContext);
 
-  const handleLogout = () => {
-    setUserData(null);
-  };
+  useEffect(() => {
+    console.log(user);
+  }, []);
 
   // Create a reference for the Navbar.Toggle component
   const toggleRef = useRef();
@@ -32,8 +30,7 @@ function Header() {
       expand="lg"
       className="bg-body-tertiary"
       style={{ height: "10vh" }}
-      id="site-navbar"
-    >
+      id="site-navbar">
       <Container>
         <Navbar.Brand as={Link} to="/">
           XOXO
@@ -59,13 +56,11 @@ function Header() {
                 <NavDropdown
                   // className="d-flex justify-content-center align-items-center"
                   title="Collect Your Social Asset"
-                  id="basic-nav-dropdown"
-                >
+                  id="basic-nav-dropdown">
                   <NavDropdown.Item
                     as={Link}
                     to="/posts"
-                    onClick={collapseNavbar}
-                  >
+                    onClick={collapseNavbar}>
                     Find Job
                   </NavDropdown.Item>
                   <NavDropdown.Item as={Link} to="/posts?data=finished">
@@ -89,19 +84,19 @@ function Header() {
                 <Nav.Link as={Link} to="/create-post">
                   Post a Task
                 </Nav.Link>
-                <Nav.Link as={Link} to="/posts">
-                  All Posts
+
+                <Nav.Link as={Link} to="/blogs">
+                  Blogs
                 </Nav.Link>
 
-                <Nav.Link as={Link} onClick={handleReferShow}>
-                  Refer
+                <Nav.Link as={Link} to="/gigs">
+                  Gigs
                 </Nav.Link>
 
                 <NavDropdown
                   // className="d-flex justify-content-center align-items-center"
                   title={`${user?.name}`}
-                  id="basic-nav-dropdown"
-                >
+                  id="basic-nav-dropdown">
                   <NavDropdown.Item as={Link} to="/profile">
                     My Profile
                   </NavDropdown.Item>
@@ -114,7 +109,11 @@ function Header() {
                   <NavDropdown.Item as={Link} to="/referals">
                     Referals Details
                   </NavDropdown.Item>
-                  <NavDropdown.Item as={Link} onClick={handleLogout}>
+                  <NavDropdown.Item
+                    as={Link}
+                    to="/logout"
+                    //  onClick={handleLogout}
+                  >
                     Logout
                   </NavDropdown.Item>
                 </NavDropdown>
@@ -123,10 +122,10 @@ function Header() {
           </Nav>
         </Navbar.Collapse>
 
-        <Refer
+        {/* <Refer
           referModalShow={referModalShow}
           handleReferClose={handleReferClose}
-        />
+        /> */}
       </Container>
     </Navbar>
   );

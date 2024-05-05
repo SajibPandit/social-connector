@@ -9,8 +9,7 @@ function HeroAlter({ heading, text, refName }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.7 }}
-    >
+      transition={{ duration: 0.7 }}>
       <Container>
         <Row>
           <Col md={6} className="text-center">
@@ -20,19 +19,21 @@ function HeroAlter({ heading, text, refName }) {
               }
               className="img-fluid"
               rounded
+              data-aos="fade-up"
             />
           </Col>
           <Col
             md={6}
-            className="text-center d-flex justify-content-center align-items-center flex-column mt-3 mt-md-0 px-4 px-md-0"
-          >
-            <h1>{heading}</h1>
-            <p>{text}</p>
+            className="text-center d-flex justify-content-center align-items-center flex-column mt-3 mt-md-0 px-4 px-md-0">
+            <h1 data-aos="fade-up">{heading}</h1>
+            <p data-aos="fade-up">{text}</p>
             <div>
-              <Button variant="secondary" className="m-2">
+              <Button variant="secondary" className="m-2" data-aos="fade-up">
                 Get Started
               </Button>
-              <Button variant="outline-secondary">Learn More</Button>
+              <Button variant="outline-secondary" data-aos="fade-up">
+                Learn More
+              </Button>
             </div>
           </Col>
         </Row>

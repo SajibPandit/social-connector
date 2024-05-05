@@ -9,10 +9,14 @@ import CreatePost from "./pages/CreatePost/CreatePost";
 import Posts from "./pages/Posts/Posts";
 import Wallet from "./pages/Wallet/Wallet";
 import Profile from "./pages/Profile/Profile";
+import PostDetails from "./pages/PostDetails/PostDetails";
+import Logout from "./pages/Logout/Logout";
+import ScrollToTop from "./utils/ScrollToTop";
 
 function App() {
   return (
     <div className="App">
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<RootLayout />}>
           <Route path="*" element={<NotFound />} />
@@ -20,9 +24,13 @@ function App() {
           <Route path="about" element={<About />} />
           <Route path="login" element={<Login />} />
           <Route path="signup" element={<Signup />} />
+          <Route path="logout" element={<Logout />} />
           <Route path="create-post" element={<CreatePost />} />
-          <Route path="posts" element={<Posts />} />
+          <Route path="posts" element={<Posts />}>
+            <Route path=":id" element={<PostDetails />} />
+          </Route>
           <Route path="wallet" element={<Wallet />} />
+          <Route path="post/:id" element={<PostDetails />} />
           <Route path="profile" element={<Profile />} />
         </Route>
       </Routes>

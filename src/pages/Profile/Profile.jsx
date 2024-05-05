@@ -10,7 +10,7 @@ function Profile() {
             <Col md={4}>
               <Card className="p-3">
                 <Row className="d-flex justify-content-center align-items-center">
-                  <Col md={6}>
+                  <Col md={6} className="text-center">
                     <Image
                       className="img-fluid my-3"
                       src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRS1u05OPc7MSt9f5Dg2QMSbRPu_FHowIjog-jxeSwHIw&s"
@@ -45,6 +45,44 @@ function Profile() {
 
                 <Button className="w-full m-3">Refer and Earn</Button>
               </Card>
+            </Col>
+
+            <Col md={8}>
+              <h4 className="text-center mt-3">Your Interactions</h4>
+              <Row className="">
+                <Col md={3} className="mt-4 px-5 px-md-3">
+                  <Card className="p-4 d-flex justify-content-center align-items-center shadow">
+                    <div className="card-contents">
+                      <p className="text-center">21</p>
+                      <p className="text-muted text-center">Total Posts</p>
+                    </div>
+                  </Card>
+                </Col>
+                <Col md={3} className="mt-4 px-5 px-md-3">
+                  <Card className="p-4 d-flex justify-content-center align-items-center shadow">
+                    <div className="card-contents">
+                      <p className="text-center">21</p>
+                      <p className="text-muted text-center">Active Posts</p>
+                    </div>
+                  </Card>
+                </Col>
+                <Col md={3} className="mt-4 px-5 px-md-3">
+                  <Card className="p-4 d-flex justify-content-center align-items-center shadow">
+                    <div className="card-contents">
+                      <p className="text-center">21</p>
+                      <p className="text-muted text-center">Completed Posts</p>
+                    </div>
+                  </Card>
+                </Col>
+                <Col md={3} className="mt-4 px-5 px-md-3">
+                  <Card className="p-4 d-flex justify-content-center align-items-center shadow">
+                    <div className="card-contents">
+                      <p className="text-center">21</p>
+                      <p className="text-muted text-center">Posts</p>
+                    </div>
+                  </Card>
+                </Col>
+              </Row>
             </Col>
           </Row>
         </Container>

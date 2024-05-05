@@ -17,9 +17,10 @@ import * as yup from "yup";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import UserContext from "../../contexts/UserContext";
+import toast from "react-hot-toast";
 
 function Login() {
-  // Defining initial state
+  //  Defining initial state
   const initialState = {
     email: "",
     password: "",
@@ -70,8 +71,13 @@ function Login() {
       setErrors({});
       setLoginError(null);
 
+      // Set user data to ther local storage
+      const userData = response?.data?.user;
+      localStorage.setItem("zozoAuth", JSON.stringify(userData));
+
       // Reseting state
       setData(initialState);
+      toast.success("Logged in successfully");
 
       // Redirect the user to the home page
       navigate("/");
@@ -102,14 +108,12 @@ function Login() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.7 }}
-    >
+      transition={{ duration: 0.7 }}>
       <Container className="mt-5 items-center my-auto">
         <Row>
           <Col
             md={6}
-            className="d-flex justify-content-center align-items-center"
-          >
+            className="d-flex justify-content-center align-items-center">
             <Image
               src={
                 "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRS1u05OPc7MSt9f5Dg2QMSbRPu_FHowIjog-jxeSwHIw&s"
@@ -167,8 +171,7 @@ function Login() {
                   variant="primary"
                   size="lg"
                   type="submit"
-                  className="w-100 mb-3"
-                >
+                  className="w-100 mb-3">
                   Submit
                 </Button>
                 <Container>
@@ -177,39 +180,34 @@ function Login() {
                       display: "flex",
                       alignItems: "center",
                       padding: "10px",
-                    }}
-                  >
+                    }}>
                     <div
                       style={{
                         flex: "1",
                         height: "1px",
                         backgroundColor: "black",
-                      }}
-                    ></div>
+                      }}></div>
                     <span style={{ padding: "0 10px" }}>Or</span>
                     <div
                       style={{
                         flex: "1",
                         height: "1px",
                         backgroundColor: "black",
-                      }}
-                    ></div>
+                      }}></div>
                   </div>
                 </Container>
 
                 <Button
                   size="lg"
                   variant="outline-primary"
-                  className="d-flex align-items-center w-100 justify-content-center mb-3"
-                >
+                  className="d-flex align-items-center w-100 justify-content-center mb-3">
                   <FaGoogle style={{ marginRight: "8px" }} />
                   Sign in with Google
                 </Button>
                 <Button
                   size="lg"
                   variant="outline-primary"
-                  className="d-flex align-items-center w-100 justify-content-center mb-3"
-                >
+                  className="d-flex align-items-center w-100 justify-content-center mb-3">
                   <FaFacebook style={{ marginRight: "8px" }} />
                   Sign in with Facebook
                 </Button>
@@ -220,8 +218,7 @@ function Login() {
                     textDecoration: "none",
                     color: "inherit",
                     marginLeft: "10px",
-                  }}
-                >
+                  }}>
                   <p className="text-center">
                     Don&apos;t have an account? Create Here.
                   </p>
