@@ -101,8 +101,8 @@ footer {
 }
 
 .home-section:nth-child(1) {
-  background-color: #867070;
-  color: #ffffff;
+  background-color: #e0d3de;
+  color: #201414;
 }
 
 .home-section:nth-child(1) .outline-secondary {
@@ -182,4 +182,11 @@ footer {
 .ytplayer {
   pointer-events: none;
   /* position: absolute; */
-  }
+}
+.cursor-pointer {
+  cursor: pointer;
+}
+.text-justify {
+  text-align: justify;
+  text-justify: inter-word;
+}

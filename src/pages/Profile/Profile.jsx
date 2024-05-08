@@ -1,10 +1,28 @@
-import { Button, Card, Col, Container, Image, Row } from "react-bootstrap";
+import {
+  Button,
+  Card,
+  Col,
+  Container,
+  Image,
+  Row,
+  Tab,
+  Tabs,
+} from "react-bootstrap";
 import PrivateRoute from "../../utils/PrivateRoute";
+import { motion } from "framer-motion";
+import UserContext from "../../contexts/UserContext";
+import { useContext } from "react";
+import "./Profile.css";
 
 function Profile() {
+  const { user } = useContext(UserContext);
   return (
     <PrivateRoute>
-      <div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.7 }}>
         <Container>
           <Row className="mt-3">
             <Col md={4}>
@@ -51,7 +69,9 @@ function Profile() {
               <h4 className="text-center mt-3">Your Interactions</h4>
               <Row className="">
                 <Col md={3} className="mt-4 px-5 px-md-3">
-                  <Card className="p-4 d-flex justify-content-center align-items-center shadow">
+                  <Card
+                    className="p-4 d-flex justify-content-center align-items-center shadow"
+                    style={{ height: "150px" }}>
                     <div className="card-contents">
                       <p className="text-center">21</p>
                       <p className="text-muted text-center">Total Posts</p>
@@ -59,34 +79,145 @@ function Profile() {
                   </Card>
                 </Col>
                 <Col md={3} className="mt-4 px-5 px-md-3">
-                  <Card className="p-4 d-flex justify-content-center align-items-center shadow">
+                  <Card
+                    className="p-4 d-flex justify-content-center align-items-center shadow"
+                    style={{ height: "150px" }}>
                     <div className="card-contents">
-                      <p className="text-center">21</p>
-                      <p className="text-muted text-center">Active Posts</p>
+                      <p className="text-center">
+                        {user?.total_refer_user !== undefined
+                          ? user?.total_refer_user
+                          : "--"}
+                      </p>
+                      <p className="text-muted text-center">Total Refer</p>
                     </div>
                   </Card>
                 </Col>
                 <Col md={3} className="mt-4 px-5 px-md-3">
-                  <Card className="p-4 d-flex justify-content-center align-items-center shadow">
+                  <Card
+                    className="p-4 d-flex justify-content-center align-items-center shadow"
+                    style={{ height: "150px" }}>
                     <div className="card-contents">
-                      <p className="text-center">21</p>
-                      <p className="text-muted text-center">Completed Posts</p>
+                      <p className="text-center">
+                        {user?.point !== undefined ? user?.point : "--"}
+                      </p>
+                      <p className="text-muted text-center">
+                        Total Available Point
+                      </p>
                     </div>
                   </Card>
                 </Col>
+
                 <Col md={3} className="mt-4 px-5 px-md-3">
-                  <Card className="p-4 d-flex justify-content-center align-items-center shadow">
+                  <Card
+                    className="p-4 d-flex justify-content-center align-items-center shadow"
+                    style={{ height: "150px" }}>
                     <div className="card-contents">
-                      <p className="text-center">21</p>
-                      <p className="text-muted text-center">Posts</p>
+                      <p className="text-center">
+                        {user?.refer_code !== undefined
+                          ? user?.refer_code
+                          : "--"}
+                      </p>
+                      <p className="text-muted text-center">User Refer Code</p>
                     </div>
                   </Card>
                 </Col>
+
+                <Tabs
+                  defaultActiveKey="freelancerProfile"
+                  id="fill-tab-example"
+                  className="mt-4 mx-3"
+                  variant="underline"
+                  justify>
+                  <Tab eventKey="freelancerProfile" title="Freelancer Profile">
+                    <Card className="p-2 my-3">
+                      <Card.Body>
+                        <div className="card-items">
+                          <div className="per-item">
+                            <div className="item-title">Tasks Done</div>
+                            <div className="item-number">0</div>
+                          </div>
+
+                          <div className="per-item">
+                            <div className="item-title">Earned</div>
+                            <div className="item-number">0</div>
+                          </div>
+
+                          <div className="per-item">
+                            <div className="item-title">Satisfied</div>
+                            <div className="item-number">0</div>
+                          </div>
+
+                          <div className="per-item">
+                            <div className="item-title">Earned/Task</div>
+                            <div className="item-number">0</div>
+                          </div>
+
+                          <div className="per-item">
+                            <div className="item-title">Not Satisfied</div>
+                            <div className="item-number">0</div>
+                          </div>
+
+                          <div className="per-item">
+                            <div className="item-title">
+                              Last Task Submitted
+                            </div>
+                            <div className="item-number">0</div>
+                          </div>
+                        </div>
+                      </Card.Body>
+                    </Card>
+                  </Tab>
+                  <Tab eventKey="buyerProfile" title="Buyer Profile">
+                    <Card className="p-2 my-3">
+                      <Card.Body>
+                        <div className="card-items">
+                          <div className="per-item">
+                            <div className="item-title">Tasks Done</div>
+                            <div className="item-number">0</div>
+                          </div>
+
+                          <div className="per-item">
+                            <div className="item-title">Earned</div>
+                            <div className="item-number">0</div>
+                          </div>
+
+                          <div className="per-item">
+                            <div className="item-title">Satisfied</div>
+                            <div className="item-number">0</div>
+                          </div>
+
+                          <div className="per-item">
+                            <div className="item-title">Earned/Task</div>
+                            <div className="item-number">0</div>
+                          </div>
+
+                          <div className="per-item">
+                            <div className="item-title">Not Satisfied</div>
+                            <div className="item-number">0</div>
+                          </div>
+
+                          <div className="per-item">
+                            <div className="item-title">
+                              Last Task Submitted
+                            </div>
+                            <div className="item-number">0</div>
+                          </div>
+                        </div>
+                      </Card.Body>
+                    </Card>
+                  </Tab>
+                  <Tab
+                    eventKey="freelancerProfileGigs"
+                    title="Freelancer Profile(Gigs)"></Tab>
+                  <Tab
+                    eventKey="buyerProfileGigs"
+                    title="Buyer Profile(Gigs)"></Tab>
+                </Tabs>
               </Row>
             </Col>
           </Row>
         </Container>
-      </div>
+      </motion.div>
     </PrivateRoute>
   );
 }

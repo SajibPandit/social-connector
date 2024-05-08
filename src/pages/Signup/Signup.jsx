@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   Container,
   Form,
@@ -15,6 +15,10 @@ import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import UserContext from "../../contexts/UserContext";
 import toast from "react-hot-toast";
+import {
+  calculateReferralPoints,
+  findValueByKey,
+} from "../../utils/calculateReferPoint";
 
 function Signup() {
   // Defining initial state
@@ -26,6 +30,7 @@ function Signup() {
     password_confirmation: "",
     dob: "",
     gender: "",
+    country_id: "",
   };
 
   // Form data state
@@ -34,10 +39,22 @@ function Signup() {
   // Errors and user feedback
   const [errors, setErrors] = useState({});
   const [signupError, setSignupError] = useState(null);
+  const [allCountry, setAllCountry] = useState([]);
   const navigate = useNavigate();
 
   // Access the context to set user data
   const { setUserData } = useContext(UserContext);
+
+  // Fetching countries data
+  useEffect(() => {
+    try {
+      axios.get(`${import.meta.env.VITE_BACKEND_URL}/country`).then((res) => {
+        setAllCountry(res?.data?.data);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
 
   // Validation schema
   const validationSchema = yup.object().shape({
@@ -60,6 +77,7 @@ function Signup() {
       .string()
       .required("Gender is required")
       .oneOf(["male", "female", "other"], "Select a valid gender"),
+    country_id: yup.string().required("Country is required"),
   });
 
   // Form submission handler
@@ -77,6 +95,92 @@ function Signup() {
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/register`,
         data
+      );
+
+      //Fetch Point Settings for the Aapp
+      const pointSettings = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/settings`
+      );
+
+      // If user provide refer id, calculate refer point
+      if (data.used_refer) {
+        //Finding Points based on key
+        const perReferPoint = Number(
+          findValueByKey(pointSettings.data.data, "user_refer_point")
+        );
+        const maxRefer = Number(
+          findValueByKey(
+            pointSettings.data.data,
+            "user_refer_limit_point_extend"
+          )
+        );
+        const pointMultiply = Number(
+          findValueByKey(
+            pointSettings.data.data,
+            "user_refer_point_increase_percent"
+          )
+        );
+
+        //getting refer number by user
+        const referuserdata = await axios.post(
+          `${import.meta.env.VITE_BACKEND_URL}/user-info`,
+          {
+            refer_code: data.used_refer,
+          },
+          {
+            headers: {
+              authorization: `Bearer ${response?.data?.data?.token}`,
+            },
+          }
+        );
+
+        const referralCount = Number(referuserdata.data.user.total_refer_user);
+
+        //Calculating Referal Point
+        const calculatedPoint = calculateReferralPoints(
+          referralCount,
+          perReferPoint,
+          maxRefer,
+          pointMultiply
+        );
+
+        //Update user point transcation value
+        await axios.post(
+          `${import.meta.env.VITE_BACKEND_URL}/point-transaction`,
+          {
+            from_id: referuserdata?.data?.user?.id,
+            user_id: referuserdata?.data?.user?.id,
+            point: calculatedPoint,
+            note: `Got ${calculatedPoint} point as bonus`,
+            type: 1,
+          },
+          {
+            headers: {
+              authorization: `Bearer ${response?.data?.data?.token}`,
+            },
+          }
+        );
+      }
+
+      // Handling register points bonus to the user
+      const newRegisterPoint = Number(
+        findValueByKey(pointSettings.data.data, "user_register_point")
+      );
+      const registerBonus = {
+        from_id: response?.data?.data?.id,
+        user_id: response?.data?.data?.id,
+        point: newRegisterPoint,
+        note: "New register point given",
+        type: 1,
+      };
+      await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/point-transaction`,
+        registerBonus,
+        {
+          headers: {
+            authorization: `Bearer ${response?.data?.data?.token}`,
+          },
+        }
       );
 
       // Set user data to ther local storage
@@ -130,7 +234,7 @@ function Signup() {
       <Container className="mb-5 items-center">
         <Row>
           <Col md={6} className="mt-5 mx-auto">
-            <Card className="p-5">
+            <Card className="p-3 p-md-5">
               <h2 className="mb-4 text-center">Signup Here</h2>
 
               {/* Display signup error if present */}
@@ -233,7 +337,7 @@ function Signup() {
                 </Form.Group>
 
                 {/* Date of Birth Input */}
-                <Form.Group controlId="formDob">
+                <Form.Group controlId="formDob" className="mb-3">
                   <Form.Label>Date of Birth</Form.Label>
                   <Form.Control
                     size="lg"
@@ -249,7 +353,7 @@ function Signup() {
                 </Form.Group>
 
                 {/* Gender Selection */}
-                <Form.Group controlId="formGender" className="mt-2 mb-2">
+                <Form.Group controlId="formGender" className="mt-2 mb-3">
                   <Form.Label>Select Gender</Form.Label>
                   <Form.Select
                     size="lg"
@@ -267,6 +371,39 @@ function Signup() {
                   <Form.Control.Feedback type="invalid">
                     {errors.gender}
                   </Form.Control.Feedback>
+                </Form.Group>
+
+                {/* Location Input */}
+                <Form.Group controlId="formGender" className="mb-3">
+                  <Form.Label>Country</Form.Label>
+                  <Form.Select
+                    size="lg"
+                    aria-label="Default select example"
+                    value={data?.country_id}
+                    onChange={(e) =>
+                      setData({ ...data, country_id: e.target.value })
+                    }>
+                    <option>Select Country</option>
+                    {allCountry.map((option, i) => (
+                      <option key={i} value={option?.id}>
+                        {option?.name}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+
+                {/* Refer Input */}
+                <Form.Group controlId="formName">
+                  <Form.Label>Refer Code (Optional)</Form.Label>
+                  <Form.Control
+                    size="lg"
+                    type="text"
+                    placeholder="Enter Refer Code"
+                    value={data?.used_refer}
+                    onChange={(e) =>
+                      setData({ ...data, used_refer: e.target.value })
+                    }
+                  />
                 </Form.Group>
 
                 {/* Submit Button */}

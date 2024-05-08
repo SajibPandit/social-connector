@@ -124,7 +124,7 @@ function Login() {
           </Col>
 
           <Col md={6} className="my-4">
-            <Card className="p-5">
+            <Card className="p-3 p-md-5">
               <h2 className="mb-4 text-center">Login Here</h2>
               {loginError && (
                 <Alert key="danger" variant="danger">

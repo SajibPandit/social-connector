@@ -12,6 +12,10 @@ import Profile from "./pages/Profile/Profile";
 import PostDetails from "./pages/PostDetails/PostDetails";
 import Logout from "./pages/Logout/Logout";
 import ScrollToTop from "./utils/ScrollToTop";
+import ProfileSettings from "./pages/ProfileSettings/ProfileSettings";
+import Perfromance from "./pages/Perfromance/Perfromance";
+import MyJobs from "./pages/MyJobs/MyJobs";
+import ReferalDetails from "./pages/ReferalDetails/ReferalDetails";
 
 function App() {
   return (
@@ -32,6 +36,10 @@ function App() {
           <Route path="wallet" element={<Wallet />} />
           <Route path="post/:id" element={<PostDetails />} />
           <Route path="profile" element={<Profile />} />
+          <Route path="profile-settings" element={<ProfileSettings />} />
+          <Route path="perfromance" element={<Perfromance />} />
+          <Route path="my-jobs" element={<MyJobs />} />
+          <Route path="referals" element={<ReferalDetails />} />
         </Route>
       </Routes>
     </div>

@@ -6,9 +6,36 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Toaster } from "react-hot-toast";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
+import UserContext from "../../contexts/UserContext";
+import { Triangle } from "react-loader-spinner";
 
 export default function RootLayout() {
+  const { loading } = useContext(UserContext);
+
+  if (loading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          width: "100%",
+        }}>
+        <Triangle
+          visible={true}
+          height="80"
+          width="80"
+          color="#4fa94d"
+          ariaLabel="triangle-loading"
+          wrapperStyle={{}}
+          wrapperClass=""
+        />
+      </div>
+    );
+  }
+
   useEffect(() => {
     AOS.init({
       // disable: "phone",

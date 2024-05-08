@@ -39,7 +39,7 @@ function Header() {
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="ms-auto">
             <Nav.Link as={Link} to="/posts">
-              All Posts
+              Find Job
             </Nav.Link>
             {!user?.id ? (
               <>
@@ -53,7 +53,7 @@ function Header() {
               </>
             ) : (
               <>
-                <NavDropdown
+                {/* <NavDropdown
                   // className="d-flex justify-content-center align-items-center"
                   title="Collect Your Social Asset"
                   id="basic-nav-dropdown">
@@ -75,7 +75,7 @@ function Header() {
                   <NavDropdown.Item as={Link} to="/referals">
                     Referals
                   </NavDropdown.Item>
-                </NavDropdown>
+                </NavDropdown> */}
 
                 <Nav.Link as={Link} to="/wallet" onClick={collapseNavbar}>
                   Wallet
@@ -83,10 +83,6 @@ function Header() {
 
                 <Nav.Link as={Link} to="/create-post">
                   Post a Task
-                </Nav.Link>
-
-                <Nav.Link as={Link} to="/blogs">
-                  Blogs
                 </Nav.Link>
 
                 <Nav.Link as={Link} to="/gigs">
@@ -106,6 +102,11 @@ function Header() {
                   <NavDropdown.Item as={Link} to="/perfromance">
                     My Perfromance
                   </NavDropdown.Item>
+
+                  <NavDropdown.Item as={Link} to="/my-jobs">
+                    My Jobs
+                  </NavDropdown.Item>
+
                   <NavDropdown.Item as={Link} to="/referals">
                     Referals Details
                   </NavDropdown.Item>

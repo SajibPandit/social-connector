@@ -5,8 +5,12 @@ import PropTypes from "prop-types";
 import toast from "react-hot-toast";
 
 const PrivateRoute = ({ children }) => {
-  const { user } = useContext(UserContext);
+  const { user, loading } = useContext(UserContext);
   let location = useLocation();
+
+  if (loading) {
+    return <h1>Loading..</h1>;
+  }
 
   if (!user?.id) {
     return <Navigate to="/login" />;

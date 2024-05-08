@@ -1,0 +1,14 @@
+.card-items {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 30px;
+}
+.per-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.item-number {
+  color: #3fac96;
+}

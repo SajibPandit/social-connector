@@ -4,8 +4,12 @@ import UserContext from "../contexts/UserContext";
 import PropTypes from "prop-types";
 
 const PrivateRoute = ({ children }) => {
-  const { user } = useContext(UserContext);
+  const { user, loading } = useContext(UserContext);
   let location = useLocation();
+
+  if (loading) {
+    return <h1>Loading..</h1>;
+  }
 
   if (!user?.id) {
     return children;

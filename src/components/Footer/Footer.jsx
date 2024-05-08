@@ -21,7 +21,8 @@ function Footer() {
             <a
               href="https://www.facebook.com"
               target="_blank"
-              rel="noopener noreferrer">
+              rel="noopener noreferrer"
+              >
               About Us
             </a>
             <a

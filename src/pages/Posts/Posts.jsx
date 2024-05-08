@@ -1,45 +1,107 @@
-import { useEffect, useState } from "react";
-import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
+import { useContext, useEffect, useState } from "react";
+import {
+  Button,
+  Card,
+  Col,
+  Container,
+  Form,
+  Row,
+  Table,
+} from "react-bootstrap";
 import { motion } from "framer-motion";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import { IoMdSearch } from "react-icons/io";
 import axios from "axios";
+import { allPosts } from "../../utils/data";
+import { useNavigate } from "react-router-dom";
+import UserContext from "../../contexts/UserContext";
 
 function Posts() {
   const [data, setData] = useState({});
   const [allCountry, setAllCountry] = useState([]);
   const [allCategory, setAllCategory] = useState([]);
+  const [allSubCategory, setAllSubCategory] = useState([]);
+  const [allTask, setAllTask] = useState([]);
+
+  //pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [itemsPerPage] = useState(10);
+
+  const navigate = useNavigate();
+
+  // Access the context to get user data
+  const { user } = useContext(UserContext);
 
   // Fetching categories and sub categories and countries data
   useEffect(() => {
-    axios.get("https://restcountries.com/v2/all").then((res) => {
-      setAllCountry(res.data);
-      console.log(res.data);
-    });
-
     try {
       axios.get(`${import.meta.env.VITE_BACKEND_URL}/category`).then((res) => {
         setAllCategory(res?.data?.data);
       });
 
-      axios.get("https://restcountries.com/v2/all").then((res) => {
-        setAllCountry(res.data);
+      axios.get(`${import.meta.env.VITE_BACKEND_URL}/country`).then((res) => {
+        setAllCountry(res?.data?.data);
+      });
+      axios.get(`${import.meta.env.VITE_BACKEND_URL}/tasks`).then((res) => {
+        setAllTask(res?.data?.data.data);
       });
     } catch (error) {
       console.log(error);
     }
   }, []);
 
-  // Fetching categories and sub categories
+  //Fetch subcategories based on selected category
   useEffect(() => {
     try {
-      axios.get(`${import.meta.env.VITE_BACKEND_URL}/category`).then((res) => {
-        setAllCategory(res?.data?.data);
-      });
+      axios
+        .get(
+          `${import.meta.env.VITE_BACKEND_URL}/subcategory/${data.category_id}`
+        )
+        .then((res) => {
+          setAllSubCategory(res?.data?.data);
+        });
     } catch (error) {
       console.log(error);
     }
-  }, []);
+  }, [data.category_id]);
+  const queryParams = new URLSearchParams();
+  const filterData = async (sortBy = "") => {
+    // setIsLoading(true); // Set loading state to true
+
+    if (data?.category_id) {
+      queryParams.append("category", data?.category_id);
+    }
+    if (data?.task_type) {
+      queryParams.append("subcategory", data?.task_type);
+    }
+    if (data?.location) {
+      queryParams.append("location", data?.location);
+    }
+    if (data?.search) {
+      queryParams.append("search", data?.search);
+    }
+    if (data?.sortBy) {
+      queryParams.append("sortBy", data?.sortBy);
+    }
+
+    console.log(queryParams.toString());
+
+    // try {
+    //   axios
+    //     .get(
+    //       `${import.meta.env.VITE_BACKEND_URL}/tasks?${queryParams.toString()}`
+    //     )
+    //     .then((res) => {
+    //       setFilterTasks(res?.data?.data);
+    //     });
+    // } catch (error) {
+    //   console.error("Error fetching data:", error);
+    // } finally {
+    //   // setIsLoading(false); // Set loading state back to false
+    // }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -47,93 +109,6 @@ function Posts() {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.7 }}>
       <Container>
-        <Row className="mt-3" direction="horizontal" gap={3}>
-          <Col md={3} sm={6} className="mt-3 mt-md-0">
-            <Form.Group controlId="formGender">
-              <Form.Select
-                size="lg"
-                aria-label="Default select example"
-                value={data?.category}
-                onChange={(e) =>
-                  setData({ ...data, category: e.target.value })
-                }>
-                <option>Select Category</option>
-                {allCategory?.map((category, i) => (
-                  <option key={i} value={category.id}>
-                    {category?.name}
-                  </option>
-                ))}
-              </Form.Select>
-            </Form.Group>
-          </Col>
-
-          <Col md={3} sm={6} className="mt-3 mt-md-0">
-            <Form.Group controlId="formGender">
-              <Form.Select
-                size="lg"
-                aria-label="Default select example"
-                disabled={!data.category}
-                value={data?.subCategory}
-                onChange={(e) =>
-                  setData({ ...data, subCategory: e.target.value })
-                }>
-                <option>Select Sub Category</option>
-                <option value="facebook">Facebook</option>
-                <option value="youtube">Youtube</option>
-                <option value="instagram">Instagram</option>
-              </Form.Select>
-            </Form.Group>
-          </Col>
-
-          <Col md={2} sm={6} className="mt-3 mt-md-0">
-            <Form.Group controlId="formGender">
-              <Form.Select
-                size="lg"
-                aria-label="Default select example"
-                value={data?.location}
-                onChange={(e) =>
-                  setData({ ...data, location: e.target.value })
-                }>
-                <option>Select Location</option>
-                {allCountry.map((option, i) => (
-                  <option key={i} value={option?.name}>
-                    {option?.name}
-                  </option>
-                ))}
-              </Form.Select>
-            </Form.Group>
-            {/* <Form.Group controlId="formBasicEmail">
-              <Form.Control
-                size="lg"
-                type="text"
-                placeholder="Enter location"
-                value={data?.location}
-                onChange={(e) => setData({ ...data, location: e.target.value })}
-              />
-            </Form.Group> */}
-          </Col>
-
-          <Col md={3} sm={6} className="mt-3 mt-md-0">
-            <Form.Group controlId="formBasicEmail">
-              <Form.Control
-                size="lg"
-                type="text"
-                placeholder="Search"
-                value={data?.search}
-                onChange={(e) => setData({ ...data, location: e.target.value })}
-              />
-            </Form.Group>
-          </Col>
-
-          <Col
-            md={1}
-            className="mt-3 mt-md-0 d-flex justify-content-end align-items-center ">
-            <Button size="lg">
-              <IoMdSearch />
-            </Button>
-          </Col>
-        </Row>
-
         <Row>
           <Col
             md={12}
@@ -151,7 +126,8 @@ function Posts() {
                   <div
                     style={{ margin: "1px solid #ddd" }}
                     className="p-2 p-0 p-md-2">
-                    Earned Point : 0.00
+                    Earned Point :{" "}
+                    {user?.point !== undefined ? user?.point : "--"}
                   </div>
                 </Form.Group>
               </Card>
@@ -194,10 +170,118 @@ function Posts() {
             </div>
           </Col>
         </Row>
+        <Row className="mt-3" direction="horizontal" gap={3}>
+          <Col md={3} sm={6} className="mt-3 mt-md-0">
+            <Form.Group controlId="formGender">
+              <Form.Select
+                size="lg"
+                aria-label="Default select example"
+                value={data?.category_id}
+                onChange={(e) =>
+                  setData({ ...data, category_id: e.target.value })
+                }>
+                <option value="">Select Category</option>
+                {allCategory?.map((category, i) => (
+                  <option key={i} value={category.id}>
+                    {category?.name}
+                  </option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+          </Col>
+
+          <Col md={3} sm={6} className="mt-3 mt-md-0">
+            <Form.Group controlId="formGender">
+              <Form.Select
+                size="lg"
+                aria-label="Default select example"
+                value={data?.task_type}
+                disabled={!data.category_id}
+                onChange={(e) =>
+                  setData({ ...data, task_type: e.target.value })
+                }>
+                <option value="">Select Sub Category</option>
+                {allSubCategory?.map((category, i) => (
+                  <option key={i} value={category.id}>
+                    {category?.name}
+                  </option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+          </Col>
+
+          <Col md={2} sm={6} className="mt-3 mt-md-0">
+            <Form.Group controlId="formGender">
+              <Form.Select
+                size="lg"
+                aria-label="Default select example"
+                value={data?.location}
+                onChange={(e) =>
+                  setData({ ...data, location: e.target.value })
+                }>
+                <option>Select Location</option>
+                {allCountry.map((option, i) => (
+                  <option key={i} value={option?.id}>
+                    {option?.name}
+                  </option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+          </Col>
+
+          <Col md={3} sm={6} className="mt-3 mt-md-0">
+            <Form.Group controlId="formBasicEmail">
+              <Form.Control
+                size="lg"
+                type="text"
+                placeholder="Search"
+                value={data?.search}
+                onChange={(e) => setData({ ...data, location: e.target.value })}
+              />
+            </Form.Group>
+          </Col>
+
+          <Col
+            md={1}
+            className="mt-3 mt-md-0 d-flex justify-content-end align-items-center ">
+            <Button onClick={filterData} size="lg">
+              <IoMdSearch />
+            </Button>
+          </Col>
+        </Row>
 
         <Row className="mt-4">
           <Col md={12} className="mb-2">
-            <Card>
+            <Table striped responsive="md" bordered hover>
+              <thead>
+                <tr>
+                  <th>Job Id</th>
+                  <th>Title</th>
+                  <th>Payment</th>
+                  <th>Done</th>
+                  <th>Deadline</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {allTask.map((post, i) => (
+                  <tr
+                    key={i}
+                    className="cursor-pointer my-5"
+                    onClick={() => navigate(`/post/${post.id}`)}>
+                    <td>{post.id}</td>
+                    <td>{post.title}</td>
+                    <td>{post.amount}</td>
+                    <td>
+                      {post.completed} / {post.quantity}
+                    </td>
+                    <td>{post.deadline}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+
+            {/* <Card>
               <Card.Body>
                 <Card.Title>Subscribe to our youtube channel</Card.Title>
                 <Row className="my-3">
@@ -290,7 +374,7 @@ function Posts() {
                   <Col md={6} sm={0}></Col>
                 </Row>
               </Card.Body>
-            </Card>
+            </Card> */}
           </Col>
         </Row>
       </Container>

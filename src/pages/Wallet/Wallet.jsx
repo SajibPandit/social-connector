@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Button, Card, Col, Container, Row } from "react-bootstrap";
 import Table from "react-bootstrap/Table";
 import Tab from "react-bootstrap/Tab";
@@ -6,9 +6,12 @@ import Tabs from "react-bootstrap/Tabs";
 import FloatingLabel from "react-bootstrap/FloatingLabel";
 import Form from "react-bootstrap/Form";
 import { motion } from "framer-motion";
+import UserContext from "../../contexts/UserContext";
 
 function Wallet() {
   const [data, setData] = useState({});
+  // Access the context to get user data
+  const { user } = useContext(UserContext);
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -30,7 +33,7 @@ function Wallet() {
           <tbody>
             <tr>
               <td>
-                Total Point : 0.00 P
+                Total Point : {user?.point !== undefined ? user?.point : "--"} P
                 <br />
                 Pending Point : 0.00 P
               </td>
@@ -45,10 +48,11 @@ function Wallet() {
         </Table>
 
         <Tabs
-          defaultActiveKey="profile"
+          defaultActiveKey="exchange"
           id="fill-tab-example"
           className="mb-3"
-          fill>
+          variant="underline"
+          justify>
           <Tab eventKey="deposit" title="Deposit">
             Will launch very soon
           </Tab>
