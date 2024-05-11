@@ -55,14 +55,25 @@ export const UserProvider = ({ children }) => {
   };
 
   //Function to activate login
-  const setLoadingData = () => {
+  const startLoading = () => {
     setLoading(true);
+  };
+
+  const stopLoading = () => {
+    setLoading(false);
   };
 
   // Return the provider component
   return (
     <UserContext.Provider
-      value={{ user, setUserData, clearUserData, loading, setLoadingData }}>
+      value={{
+        user,
+        setUserData,
+        clearUserData,
+        loading,
+        startLoading,
+        stopLoading,
+      }}>
       {children}
     </UserContext.Provider>
   );
