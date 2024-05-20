@@ -5,6 +5,7 @@ import {
   Col,
   Container,
   Form,
+  Pagination,
   Row,
   Table,
 } from "react-bootstrap";
@@ -15,6 +16,8 @@ import axios from "axios";
 import { allPosts } from "../../utils/data";
 import { useNavigate } from "react-router-dom";
 import UserContext from "../../contexts/UserContext";
+import { Triangle } from "react-loader-spinner";
+import moment from "moment";
 
 function Posts() {
   const [data, setData] = useState({});
@@ -22,11 +25,10 @@ function Posts() {
   const [allCategory, setAllCategory] = useState([]);
   const [allSubCategory, setAllSubCategory] = useState([]);
   const [allTask, setAllTask] = useState([]);
-
-  //pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
-  const [itemsPerPage] = useState(10);
+  const [pagination, setPagination] = useState({ current_page: 1 });
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const relativeTime = moment("2012-04-24").fromNow();
 
   const navigate = useNavigate();
 
@@ -67,7 +69,7 @@ function Posts() {
   }, [data.category_id]);
   const queryParams = new URLSearchParams();
   const filterData = async (sortBy = "") => {
-    // setIsLoading(true); // Set loading state to true
+    setLoading(true); // Set loading state to true
 
     if (data?.category_id) {
       queryParams.append("category", data?.category_id);
@@ -82,25 +84,79 @@ function Posts() {
       queryParams.append("search", data?.search);
     }
     if (data?.sortBy) {
-      queryParams.append("sortBy", data?.sortBy);
+      queryParams.append("short_by", data?.sortBy);
+    }
+    if (page) {
+      queryParams.append("page", page);
     }
 
     console.log(queryParams.toString());
 
-    // try {
-    //   axios
-    //     .get(
-    //       `${import.meta.env.VITE_BACKEND_URL}/tasks?${queryParams.toString()}`
-    //     )
-    //     .then((res) => {
-    //       setFilterTasks(res?.data?.data);
-    //     });
-    // } catch (error) {
-    //   console.error("Error fetching data:", error);
-    // } finally {
-    //   // setIsLoading(false); // Set loading state back to false
-    // }
+    try {
+      axios
+        .get(
+          `${
+            import.meta.env.VITE_BACKEND_URL
+          }/filter-task?${queryParams.toString()}`
+        )
+        .then((res) => {
+          setAllTask(res?.data?.data?.data);
+          const {
+            first_page_url,
+            last_page_url,
+            links,
+            current_page,
+            last_page,
+          } = res?.data?.data;
+          setPagination({
+            ...pagination,
+            first_page_url,
+            last_page_url,
+            links,
+            current_page,
+            last_page,
+          });
+        });
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false); // Set loading state back to false
+    }
   };
+
+  useEffect(() => {
+    filterData();
+  }, [
+    page,
+    data?.category_id,
+    data?.task_type,
+    data?.location,
+    data?.search,
+    data?.sortBy,
+  ]);
+
+  if (loading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          width: "100%",
+        }}>
+        <Triangle
+          visible={true}
+          height="80"
+          width="80"
+          color="#4fa94d"
+          ariaLabel="triangle-loading"
+          wrapperStyle={{}}
+          wrapperClass=""
+        />
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -163,8 +219,9 @@ function Posts() {
                     setData({ ...data, sortBy: e.target.value })
                   }>
                   <option>Sort By</option>
-                  <option value="mostRecent">Most Recent</option>
-                  <option value="oldPosts">Old Posts</option>
+                  <option value="recent">Recent</option>
+                  <option value="amount">Amount</option>
+                  <option value="deadline">Deadline</option>
                 </Form.Select>
               </Form.Group>
             </div>
@@ -210,7 +267,7 @@ function Posts() {
             </Form.Group>
           </Col>
 
-          <Col md={2} sm={6} className="mt-3 mt-md-0">
+          <Col md={3} sm={6} className="mt-3 mt-md-0">
             <Form.Group controlId="formGender">
               <Form.Select
                 size="lg"
@@ -219,7 +276,7 @@ function Posts() {
                 onChange={(e) =>
                   setData({ ...data, location: e.target.value })
                 }>
-                <option>Select Location</option>
+                <option value="">Select Location</option>
                 {allCountry.map((option, i) => (
                   <option key={i} value={option?.id}>
                     {option?.name}
@@ -236,18 +293,18 @@ function Posts() {
                 type="text"
                 placeholder="Search"
                 value={data?.search}
-                onChange={(e) => setData({ ...data, location: e.target.value })}
+                onChange={(e) => setData({ ...data, search: e.target.value })}
               />
             </Form.Group>
           </Col>
 
-          <Col
+          {/* <Col
             md={1}
             className="mt-3 mt-md-0 d-flex justify-content-end align-items-center ">
             <Button onClick={filterData} size="lg">
               <IoMdSearch />
             </Button>
-          </Col>
+          </Col> */}
         </Row>
 
         <Row className="mt-4">
@@ -275,11 +332,45 @@ function Posts() {
                     <td>
                       {post.completed} / {post.quantity}
                     </td>
-                    <td>{post.deadline}</td>
+                    <td>
+                      {moment(post.deadline).fromNow()}
+                      {/* const relativeTime = moment("2012-04-24").fromNow();
+                      {post.deadline} {relativeTime} */}
+                    </td>
                   </tr>
                 ))}
+                {allTask.length === 0 && (
+                  <p className="py-3 text-danger text-blod">No Tasks Found</p>
+                )}
               </tbody>
             </Table>
+
+            <Pagination className="py-md-0 py-3">
+              <Pagination.First onClick={() => setPage(1)} />
+              <Pagination.Prev
+                onClick={() => setPage(page > 1 ? page - 1 : 1)}
+                disabled={page === 1}
+              />
+              {Array.from({ length: pagination?.last_page }, (_, index) => (
+                <Pagination.Item
+                  key={index + 1}
+                  active={index + 1 === page}
+                  onClick={() => setPage(index + 1)}>
+                  {index + 1}
+                </Pagination.Item>
+              ))}
+              <Pagination.Next
+                onClick={() =>
+                  setPage(
+                    page < pagination?.last_page
+                      ? page + 1
+                      : pagination?.last_page
+                  )
+                }
+                disabled={page === pagination?.last_page}
+              />
+              <Pagination.Last onClick={() => setPage(pagination?.last_page)} />
+            </Pagination>
 
             {/* <Card>
               <Card.Body>

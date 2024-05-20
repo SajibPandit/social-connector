@@ -39,7 +39,6 @@ function CreatePost() {
       });
     } catch (error) {
       console.log(error);
-     
     }
   }, []);
 
@@ -76,7 +75,10 @@ function CreatePost() {
       .positive("Amount must be greater than zero")
       .required("Amount is required"),
     link: yup.string().url("Invalid URL format").required("Link is required"),
-    deadline: yup.string().required("Deadline is required"),
+    deadline: yup
+      .string()
+      .required("Deadline is required")
+      .min(new Date().toISOString(), "Deadline must be greater than now"),
   });
 
   // Handle form submission

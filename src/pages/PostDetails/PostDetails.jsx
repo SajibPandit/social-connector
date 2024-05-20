@@ -11,7 +11,7 @@ import HideJobModal from "../../components/Modal/HideJobModal";
 import axios from "axios";
 
 function PostDetails() {
-  const [data, setData] = useState({ proof: [] });
+  const [data, setData] = useState({});
   const { id } = useParams(); // Get the id parameter from the URL
   const [post, setPost] = useState(null);
   // const [show, setShow] = useState(false);
@@ -39,12 +39,15 @@ function PostDetails() {
 
   // Fetch post data when component mounts
   useEffect(() => {
+    setData({ ...data, task_id: id });
+
     const fetchPost = async () => {
       try {
         axios
           .get(`${import.meta.env.VITE_BACKEND_URL}/task/view/${id}`)
           .then((res) => {
             setPost(res?.data?.data);
+            setData({ ...data, proof: res?.data?.data?.proof });
           });
       } catch (error) {
         console.error("Error fetching post:", error);
@@ -52,6 +55,10 @@ function PostDetails() {
     };
     fetchPost();
   }, [id]);
+
+  useEffect(() => {
+    console.log(data);
+  }, [data]);
 
   const proff = [
     {
@@ -80,8 +87,58 @@ function PostDetails() {
     },
   ];
 
-  const handleProof = () => {
-    console.log(data);
+  const handleProof = async (e) => {
+    e.preventDefault();
+
+    //persing data form local storage
+    const storedUser = localStorage.getItem("zozoAuth");
+    const parsedData = JSON.parse(storedUser);
+
+    let formData = new FormData();
+    setData({ ...data, user_id: parsedData.id, task_id: id });
+
+    formData.append("m", "er");
+    for (let key in data) {
+      console.log(key);
+      if (Array.isArray(data[key])) {
+        data[key].forEach((item, index) => {
+          for (let subKey in item) {
+            formData.append(`${key}[${index}][${subKey}]`, item[subKey]);
+          }
+        });
+      } else {
+        formData.append(key, data[key]);
+      }
+    }
+
+    for (let pair of formData.entries()) {
+      console.log(pair[0] + ", " + pair[1]);
+      for (let key in pair) {
+        console.log(key + ": " + pair[key]);
+      }
+    }
+
+    console.log(formData.getAll("user_id"), "useruddd");
+    console.log(formData.getAll(`proof[0][image]`), "useruddd");
+    console.log(formData);
+
+    try {
+      // Perform form submission logic here (sending data to server)
+      console.log("submit data", {
+        ...data,
+        user_id: parsedData.id,
+        task_id: id,
+      });
+      await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/task/inroll`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${parsedData.token}`,
+          },
+        }
+      );
+    } catch (error) {}
   };
 
   return (
@@ -212,32 +269,44 @@ function PostDetails() {
             </Card>
             <>
               {post?.proof?.map((item, i) => (
-                <>
-                  <div key={i} className="my-3">
-                    <h5 className="text-muted">{item.question}</h5>
-                    {item.type === "text" ? (
-                      <Form.Group className="my-3" controlId={`textarea_${i}`}>
-                        <Form.Control
-                          size="lg"
-                          placeholder="Give answer"
-                          as="textarea"
-                          rows={3}
-                          value={data?.proof[i]?.text || ""}
-                          onChange={(e) =>
-                            setData({
-                              ...data,
-                              proof: {
-                                ...data?.proof,
-                                [i]: {
-                                  ...data.proof[i],
-                                  text: e.target.value,
-                                },
+                <div key={i} className="my-3">
+                  <h5 className="text-muted">{item.question}</h5>
+                  {item.type === "text" ? (
+                    <Form.Group className="my-3" controlId={`textarea_${i}`}>
+                      <Form.Control
+                        size="lg"
+                        placeholder="Give answer"
+                        as="textarea"
+                        rows={3}
+                        value={data?.proof[i]?.title || ""}
+                        onChange={(e) =>
+                          setData({
+                            ...data,
+                            proof: {
+                              ...data?.proof,
+                              [i]: {
+                                ...data.proof[i],
+                                title: e.target.value,
+                                image: "",
                               },
-                            })
-                          }
-                        />
-                      </Form.Group>
-                    ) : (
+                            },
+                          })
+                        }
+                      />
+                    </Form.Group>
+                  ) : (
+                    <>
+                      <img
+                        width="100%"
+                        className="m-auto  mb-3 img-fluid img-thumbnail rounded"
+                        height={300}
+                        src={
+                          data?.proof[i]?.image instanceof File
+                            ? URL.createObjectURL(data?.proof[i]?.image)
+                            : "https://i.ibb.co/4g2RtSS/abstract-blue-geometric-shapes-background-1035-17545.webp"
+                        }
+                        alt="hotel"
+                      />
                       <Form.Group className="my-3" controlId={`file_${i}`}>
                         <Form.Control
                           size="lg"
@@ -249,28 +318,33 @@ function PostDetails() {
                                 ...data.proof,
                                 [i]: {
                                   ...data.proof[i],
-                                  screenshot: e.target.files[0],
+                                  image: e.target.files[0],
+                                  title: "gggg",
                                 },
                               },
                             })
                           }
                         />
 
-                        {item.type === "screenshot" && data[i]?.screenshot && (
+                        {item.type === "screenshot" && data[i]?.image && (
                           <div className="my-3">
                             <h6>Preview:</h6>
                             <img
-                              src={URL.createObjectURL(data[i]?.screenshot)}
+                              src={URL.createObjectURL(data[i]?.image)}
                               alt="Screenshot Preview"
-                              style={{ maxWidth: "100%", maxHeight: "200px" }}
+                              style={{
+                                maxWidth: "100%",
+                                maxHeight: "200px",
+                              }}
                             />
                           </div>
                         )}
                       </Form.Group>
-                    )}
-                  </div>
-                </>
+                    </>
+                  )}
+                </div>
               ))}
+
               {/* {Object.keys(post?.proof).map((key) => {
                 const { question, type } = post.proof[key];
                 return (
