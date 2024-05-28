@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Col, Container, Form, Row } from "react-bootstrap";
+import { Button, Col, Container, Form, Row, Table } from "react-bootstrap";
 
 function ReferalDetails() {
   return (
@@ -38,6 +38,41 @@ function ReferalDetails() {
             <Button variant="secondary" className="w-100" size="lg">
               Copy Invite Link
             </Button>
+          </Col>
+        </Row>
+
+        <Row>
+          <Col md={12}>
+            <h4 className="text-center py-3">My Referal List</h4>
+
+            <Table striped responsive="md" bordered hover>
+              <thead>
+                <tr>
+                  <th>Refer Id</th>
+                  <th>Amount</th>
+                  <th>Approved</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr>
+                  <td>1st refer</td>
+                  <td>0.00$</td>
+                  <td>Paid</td>
+                </tr>
+                <tr>
+                  <td>1st refer</td>
+                  <td>0.00$</td>
+                  <td>Paid</td>
+                </tr>
+
+                <tr>
+                  <td>1st refer</td>
+                  <td>0.00$</td>
+                  <td>Paid</td>
+                </tr>
+              </tbody>
+            </Table>
           </Col>
         </Row>
       </Container>

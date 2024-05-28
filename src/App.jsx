@@ -16,6 +16,7 @@ import ProfileSettings from "./pages/ProfileSettings/ProfileSettings";
 import Perfromance from "./pages/Perfromance/Perfromance";
 import MyJobs from "./pages/MyJobs/MyJobs";
 import ReferalDetails from "./pages/ReferalDetails/ReferalDetails";
+import ProofDetails from "./pages/ProofDetails/ProofDetails";
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
           </Route>
           <Route path="wallet" element={<Wallet />} />
           <Route path="post/:id" element={<PostDetails />} />
+          <Route path="proof/:id" element={<ProofDetails />} />
           <Route path="profile" element={<Profile />} />
           <Route path="profile-settings" element={<ProfileSettings />} />
           <Route path="perfromance" element={<Perfromance />} />

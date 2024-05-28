@@ -78,7 +78,7 @@ function CreatePost() {
     deadline: yup
       .string()
       .required("Deadline is required")
-      .min(new Date().toISOString(), "Deadline must be greater than now"),
+      // .min(new Date(), "Deadline must be greater than now"),
   });
 
   // Handle form submission

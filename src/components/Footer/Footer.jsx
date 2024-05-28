@@ -21,8 +21,7 @@ function Footer() {
             <a
               href="https://www.facebook.com"
               target="_blank"
-              rel="noopener noreferrer"
-              >
+              rel="noopener noreferrer">
               About Us
             </a>
             <a
@@ -42,7 +41,7 @@ function Footer() {
 
         <div className="footer-center d-flex justify-content-between align-items-center pt-4 pb-2">
           <p className="text-md-left text-center">
-            © 2024 SproutGigs.com. All Rights Reserved.
+            © 2024 jawzow.com. All Rights Reserved.
           </p>
           <div className="social-media-icons d-flex justify-content-between align-items-center">
             <a
@@ -81,9 +80,8 @@ function Footer() {
 
         <div className="footer-bottom">
           <p className="text-muted">
-            47 U.S. Code § 230 Disclaimer: SproutGigs shall not be treated as
-            the publisher or speaker of any information provided by job
-            publishers.
+            47 BAN. Code § 230 Disclaimer: JawZow shall not be treated as the
+            publisher or speaker of any information provided by job publishers.
           </p>
         </div>
       </Container>

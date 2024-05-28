@@ -10,13 +10,10 @@ import {
   Table,
 } from "react-bootstrap";
 import { motion } from "framer-motion";
-import ProgressBar from "react-bootstrap/ProgressBar";
-import { IoMdSearch } from "react-icons/io";
 import axios from "axios";
-import { allPosts } from "../../utils/data";
 import { useNavigate } from "react-router-dom";
 import UserContext from "../../contexts/UserContext";
-import { Triangle } from "react-loader-spinner";
+import { MagnifyingGlass } from "react-loader-spinner";
 import moment from "moment";
 
 function Posts() {
@@ -28,7 +25,6 @@ function Posts() {
   const [pagination, setPagination] = useState({ current_page: 1 });
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
-  const relativeTime = moment("2012-04-24").fromNow();
 
   const navigate = useNavigate();
 
@@ -67,10 +63,9 @@ function Posts() {
       console.log(error);
     }
   }, [data.category_id]);
-  const queryParams = new URLSearchParams();
-  const filterData = async (sortBy = "") => {
-    setLoading(true); // Set loading state to true
 
+  const queryParams = new URLSearchParams();
+  const filterData = async () => {
     if (data?.category_id) {
       queryParams.append("category", data?.category_id);
     }
@@ -89,8 +84,6 @@ function Posts() {
     if (page) {
       queryParams.append("page", page);
     }
-
-    console.log(queryParams.toString());
 
     try {
       axios
@@ -120,7 +113,6 @@ function Posts() {
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
-      setLoading(false); // Set loading state back to false
     }
   };
 
@@ -145,14 +137,15 @@ function Posts() {
           height: "100vh",
           width: "100%",
         }}>
-        <Triangle
+        <MagnifyingGlass
           visible={true}
           height="80"
           width="80"
-          color="#4fa94d"
-          ariaLabel="triangle-loading"
+          ariaLabel="magnifying-glass-loading"
           wrapperStyle={{}}
-          wrapperClass=""
+          wrapperClass="magnifying-glass-wrapper"
+          glassColor="#c0efff"
+          color="#e15b64"
         />
       </div>
     );
@@ -308,7 +301,7 @@ function Posts() {
         </Row>
 
         <Row className="mt-4">
-          <Col md={12} className="mb-2">
+          <Col md={12} className="mb-2" style={{ minHeight: "500px" }}>
             <Table striped responsive="md" bordered hover>
               <thead>
                 <tr>
@@ -340,13 +333,19 @@ function Posts() {
                   </tr>
                 ))}
                 {allTask.length === 0 && (
-                  <p className="py-3 text-danger text-blod">No Tasks Found</p>
+                  <>
+                    <p className="py-3 text-danger text-blod">No Tasks Found</p>
+                  </>
                 )}
               </tbody>
             </Table>
-
             <Pagination className="py-md-0 py-3">
-              <Pagination.First onClick={() => setPage(1)} />
+              <Pagination.First
+                onClick={() => setPage(1)}
+                data-toggle="tooltip"
+                data-placement="left"
+                title="Jump to First Page"
+              />
               <Pagination.Prev
                 onClick={() => setPage(page > 1 ? page - 1 : 1)}
                 disabled={page === 1}
@@ -369,7 +368,12 @@ function Posts() {
                 }
                 disabled={page === pagination?.last_page}
               />
-              <Pagination.Last onClick={() => setPage(pagination?.last_page)} />
+              <Pagination.Last
+                onClick={() => setPage(pagination?.last_page)}
+                data-toggle="tooltip"
+                data-placement="right"
+                title="Jump to Last Page"
+              />
             </Pagination>
 
             {/* <Card>
