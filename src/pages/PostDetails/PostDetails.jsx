@@ -94,9 +94,9 @@ function PostDetails() {
     const storedUser = localStorage.getItem("zozoAuth");
     const parsedData = JSON.parse(storedUser);
 
-    let formData = new FormData();
+    // let formData = new FormData();
     setData({ ...data, user_id: parsedData.id, task_id: id });
-
+    let formData = new FormData();
     formData.append("m", "er");
     for (let key in data) {
       console.log(key);
@@ -111,16 +111,59 @@ function PostDetails() {
       }
     }
 
+    // for (let pair of formData.entries()) {
+    //   console.log(pair[0] + ", " + pair[1]);
+    //   for (let key in pair) {
+    //     console.log(key + ": " + pair[key]);
+    //   }
+    // }
+    
+    // for (let key in data) {
+    //   if (typeof data[key] === "object") {
+    //     if (Array.isArray(data[key])) {
+    //       data[key].forEach((item, index) => {
+    //         for (let subKey in item) {
+    //           formData.append(`${key}[${index}].${subKey}`, item[subKey]);
+    //         }
+    //       });
+    //     } else {
+    //       for (let subKey in data[key]) {
+    //         formData.append(`${key}.${subKey}`, data[key][subKey]);
+    //       }
+    //     }
+    //   } else {
+    //     formData.append(key, data[key]);
+    //   }
+    // }
+
+    // console.log(formData);
+
     for (let pair of formData.entries()) {
-      console.log(pair[0] + ", " + pair[1]);
-      for (let key in pair) {
-        console.log(key + ": " + pair[key]);
+      console.log(pair[0] + ": " + pair[1]);
+    }
+
+    let objectFromFormData = {};
+
+    for (let pair of formData.entries()) {
+      const key = pair[0];
+      const value = pair[1];
+
+      // Check if the key already exists in the object
+      if (objectFromFormData.hasOwnProperty(key)) {
+        // If the key already exists and its value is an array, push the new value
+        if (Array.isArray(objectFromFormData[key])) {
+          objectFromFormData[key].push(value);
+        } else {
+          // If the key already exists but its value is not an array, convert it to an array
+          objectFromFormData[key] = [objectFromFormData[key], value];
+        }
+      } else {
+        // If the key doesn't exist in the object, simply add the key-value pair
+        objectFromFormData[key] = value;
       }
     }
 
-    console.log(formData.getAll("user_id"), "useruddd");
-    console.log(formData.getAll(`proof[0][image]`), "useruddd");
-    console.log(formData);
+    console.log("yyyyyyyyyyy", objectFromFormData);
 
     try {
       // Perform form submission logic here (sending data to server)

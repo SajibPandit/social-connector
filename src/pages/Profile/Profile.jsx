@@ -11,11 +11,27 @@ import {
 import PrivateRoute from "../../utils/PrivateRoute";
 import { motion } from "framer-motion";
 import UserContext from "../../contexts/UserContext";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import "./Profile.css";
+import axios from "axios";
+import moment from "moment";
+import { useNavigate } from "react-router-dom";
+import profileImage from "../../assets/default_profile.png";
 
 function Profile() {
   const { user } = useContext(UserContext);
+  const navigate = useNavigate();
+
+  const [country, setCountry] = useState({});
+  useEffect(() => {
+    axios.get(`${import.meta.env.VITE_BACKEND_URL}/country`).then((res) => {
+      setCountry(
+        res?.data?.data.filter((item) => item.id === user?.country_id)
+      );
+    });
+    console.log(user);
+    console.log(country);
+  }, [user]);
   return (
     <PrivateRoute>
       <motion.div
@@ -24,26 +40,29 @@ function Profile() {
         exit={{ opacity: 0 }}
         transition={{ duration: 0.7 }}>
         <Container>
-          <Row className="mt-3">
+          <Row className="my-3">
             <Col md={4}>
               <Card className="p-3">
                 <Row className="d-flex justify-content-center align-items-center">
                   <Col md={6} className="text-center">
                     <Image
                       className="img-fluid my-3"
-                      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRS1u05OPc7MSt9f5Dg2QMSbRPu_FHowIjog-jxeSwHIw&s"
+                      src={user.avatar ? user.avatar : profileImage}
                       rounded
                     />
                   </Col>
                 </Row>
 
-                <p className="text-center">Name</p>
-                <p className="text-center">Bangladesh</p>
+                <p className="text-center">{user?.name}</p>
+                <p className="text-center text-lead">{user?.email}</p>
+                <p className="text-center">{country && country[0]?.name}</p>
 
                 <Row className="my-3">
                   <Col md={6}>
                     <p className="text-center text-muted">Member Since</p>
-                    <p className="text-center ">April 2024</p>
+                    <p className="text-center ">
+                      {moment(user.created_at).format("LL")}
+                    </p>
                   </Col>
                   <Col md={6}>
                     <p className="text-center text-muted">Last Seen</p>
@@ -61,7 +80,11 @@ function Profile() {
                   </Col>
                 </Row>
 
-                <Button className="w-full m-3">Refer and Earn</Button>
+                <Button
+                  onClick={() => navigate("/referals")}
+                  className="w-full m-3">
+                  Refer and Earn
+                </Button>
               </Card>
             </Col>
 
@@ -206,12 +229,12 @@ function Profile() {
                       </Card.Body>
                     </Card>
                   </Tab>
-                  <Tab
+                  {/* <Tab
                     eventKey="freelancerProfileGigs"
                     title="Freelancer Profile(Gigs)"></Tab>
                   <Tab
                     eventKey="buyerProfileGigs"
-                    title="Buyer Profile(Gigs)"></Tab>
+                    title="Buyer Profile(Gigs)"></Tab> */}
                 </Tabs>
               </Row>
             </Col>

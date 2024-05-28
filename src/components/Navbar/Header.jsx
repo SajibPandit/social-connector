@@ -85,9 +85,9 @@ function Header() {
                   Post a Task
                 </Nav.Link>
 
-                <Nav.Link as={Link} to="/gigs">
+                {/* <Nav.Link as={Link} to="/gigs">
                   Gigs
-                </Nav.Link>
+                </Nav.Link> */}
 
                 <NavDropdown
                   // className="d-flex justify-content-center align-items-center"
