@@ -81,7 +81,7 @@ function PendingTask() {
                 <tr
                   key={i}
                   className="cursor-pointer my-5"
-                  onClick={() => navigate(`/post/${post.done}`)}>
+                  onClick={() => navigate(`/post/${post.task_id}`)}>
                   <td>{post.id}</td>
                   <td>{post.title}</td>
                   <td>{post.inroll_point}</td>

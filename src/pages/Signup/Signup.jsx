@@ -173,6 +173,7 @@ function Signup() {
         note: "New register point given",
         type: 1,
       };
+      console.log(response?.data)
       await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/point-transaction`,
         registerBonus,

@@ -1,32 +1,53 @@
-import React, { useState } from "react";
-import { Button, Card, Container, Form, Spinner } from "react-bootstrap";
-import { Link, useParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Button, Card, Container, Form, Spinner, Stack } from "react-bootstrap";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { BsBoxArrowUpRight } from "react-icons/bs";
 import { FaHandPointRight } from "react-icons/fa";
+import axios from "axios";
+import CompleteTaskModal from "../../components/Modal/CompleteTaskModal";
+import RejectTaskModal from "../../components/Modal/RejectTaskModal";
 
 function ProofDetails() {
   const [data, setData] = useState({});
+  const [review, setReview] = useState({});
   const { id } = useParams();
+  const navigate = useNavigate();
+
+  //Reject Modal State
+  const [showReject, setShowReject] = useState(false);
+  const handleRejectClose = () => setShowReject(false);
+  const handleRejectShow = () => setShowReject(true);
+
+  //Complete Modal State
+  const [showComplete, setShowComplete] = useState(false);
+  const handleCompleteClose = () => setShowComplete(false);
+  const handleCompleteShow = () => setShowComplete(true);
 
   // Fetch data when component mounts
-  // useEffect(() => {
-  //   setData({ ...data, task_id: id });
+  useEffect(() => {
+    setData({ ...data, task_id: id });
+    const storedUser = localStorage.getItem("zozoAuth");
+    const parsedData = JSON.parse(storedUser);
 
-  //   const fetchPost = async () => {
-  //     try {
-  //       axios
-  //         .get(`${import.meta.env.VITE_BACKEND_URL}/task/view/${id}`)
-  //         .then((res) => {
-  //           setPost(res?.data?.data);
-  //           setData({ ...data, proof: res?.data?.data?.proof });
-  //         });
-  //     } catch (error) {
-  //       console.error("Error fetching post:", error);
-  //     }
-  //   };
-  //   fetchPost();
-  // }, [id]);
+    const fetchPost = async () => {
+      try {
+        axios
+          .get(`${import.meta.env.VITE_BACKEND_URL}/my-task/${id}`, {
+            headers: {
+              Authorization: `Bearer ${parsedData.token}`,
+            },
+          })
+          .then((res) => {
+            setData(res.data.data);
+          });
+      } catch (error) {
+        console.error("Error fetching post:", error);
+      }
+    };
+    fetchPost();
+    console.log("dgeeergre", data);
+  }, [id]);
 
   return (
     <motion.div
@@ -157,96 +178,62 @@ function ProofDetails() {
             <>
               {data?.proof?.map((item, i) => (
                 <div key={i} className="my-3">
-                  <h5 className="text-muted">{item.question}</h5>
+                  <h5 className="text-muted">{item.title}</h5>
                   {item.type === "text" ? (
                     <Form.Group className="my-3" controlId={`textarea_${i}`}>
                       <Form.Control
                         size="lg"
-                        placeholder="Give answer"
                         as="textarea"
                         rows={3}
-                        value={data?.proof[i]?.title || ""}
-                        onChange={(e) =>
-                          setData({
-                            ...data,
-                            proof: {
-                              ...data?.proof,
-                              [i]: {
-                                ...data.proof[i],
-                                title: e.target.value,
-                                image: "",
-                              },
-                            },
-                          })
-                        }
+                        value={item.title}
+                        disabled
                       />
                     </Form.Group>
                   ) : (
                     <>
                       <img
                         width="100%"
-                        className="m-auto  mb-3 img-fluid img-thumbnail rounded"
-                        height={300}
+                        className="m-auto mb-3 img-fluid rounded responsive-image"
+                        height={30}
                         src={
-                          data?.proof[i]?.image instanceof File
-                            ? URL.createObjectURL(data?.proof[i]?.image)
+                          item?.image
+                            ? `${import.meta.env.VITE_IMAGES_URL}/${
+                                item?.image
+                              }`
                             : "https://i.ibb.co/4g2RtSS/abstract-blue-geometric-shapes-background-1035-17545.webp"
                         }
                         alt="hotel"
                       />
-                      <Form.Group className="my-3" controlId={`file_${i}`}>
-                        <Form.Control
-                          size="lg"
-                          type="file"
-                          onChange={(e) =>
-                            setData({
-                              ...data,
-                              proof: {
-                                ...data.proof,
-                                [i]: {
-                                  ...data.proof[i],
-                                  image: e.target.files[0],
-                                  title: "gggg",
-                                },
-                              },
-                            })
-                          }
-                        />
-
-                        {item.type === "screenshot" && data[i]?.image && (
-                          <div className="my-3">
-                            <h6>Preview:</h6>
-                            <img
-                              src={URL.createObjectURL(data[i]?.image)}
-                              alt="Screenshot Preview"
-                              style={{
-                                maxWidth: "100%",
-                                maxHeight: "200px",
-                              }}
-                            />
-                          </div>
-                        )}
-                      </Form.Group>
                     </>
                   )}
                 </div>
               ))}
-
-              {/* {Object.keys(data?.proof).map((key) => {
-            const { question, type } = data.proof[key];
-            return (
-              
-            );
-          })} */}
             </>
-            <div className="action-buttons d-flex justify-content-between align-items-center py-4">
+            <div className="action-buttons d-flex justify-content-between align-items-center flex-column flex-md-row gap-3 py-4">
               <Button variant="outline-secondary" onClick={() => navigate(-1)}>
                 Go Back
               </Button>
-              <Button variant="success">Submit Task</Button>
+              <Stack direction="horizontal" gap={3}>
+                <Button variant="success" onClick={handleRejectShow}>
+                  Reject This Task
+                </Button>
+                <Button variant="success" onClick={handleCompleteShow}>
+                  Complete This Task
+                </Button>
+              </Stack>
             </div>
           </>
         )}
+        <CompleteTaskModal
+          show={showComplete}
+          handleClose={handleCompleteClose}
+          proofId={id}
+        />
+        <RejectTaskModal
+          show={showReject}
+          handleClose={handleRejectClose}
+          proofId={id}
+        />
       </Container>
     </motion.div>
   );

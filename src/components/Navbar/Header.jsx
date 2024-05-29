@@ -33,7 +33,7 @@ function Header() {
       id="site-navbar">
       <Container>
         <Navbar.Brand as={Link} to="/">
-          XOXO
+          JAWZOW
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" ref={toggleRef} />
         <Navbar.Collapse id="responsive-navbar-nav">
@@ -105,6 +105,10 @@ function Header() {
 
                   <NavDropdown.Item as={Link} to="/my-jobs">
                     My Jobs
+                  </NavDropdown.Item>
+
+                  <NavDropdown.Item as={Link} to="/completed-tasks">
+                    Completed Tasks
                   </NavDropdown.Item>
 
                   <NavDropdown.Item as={Link} to="/referals">

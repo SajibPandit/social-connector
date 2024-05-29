@@ -1,7 +1,3 @@
-import { useContext, useEffect, useState } from "react";
-import axios from "axios";
-import moment from "moment";
-import { motion } from "framer-motion";
 import {
   Button,
   Card,
@@ -12,28 +8,33 @@ import {
   Tab,
   Tabs,
 } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
 import PrivateRoute from "../../utils/PrivateRoute";
-import UserContext from "../../contexts/UserContext";
-import profileImage from "../../assets/default_profile.png";
+import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import "./Profile.css";
+import axios from "axios";
+import moment from "moment";
+import { useNavigate, useParams } from "react-router-dom";
+import profileImage from "../../assets/default_profile.png";
 
-function Profile() {
-  const [country, setCountry] = useState({});
-
-  const { user } = useContext(UserContext);
+function UserProfile() {
+  const { id } = useParams(); // Get the id parameter from the URL
   const navigate = useNavigate();
 
+  const [country, setCountry] = useState({});
+  const [data, setData] = useState({});
   useEffect(() => {
-    axios.get(`${import.meta.env.VITE_BACKEND_URL}/country`).then((res) => {
-      setCountry(
-        res?.data?.data.filter((item) => item.id === user?.country_id)
-      );
-    });
-    console.log(user);
-    console.log(country);
-  }, [user]);
+    axios
+      .get(`${import.meta.env.VITE_BACKEND_URL}/user-profile/${id}`)
+      .then((res) => {
+        setData(res?.data?.data);
+        console.log(res?.data?.data);
+      });
+  }, [id]);
 
+  useEffect(() => {
+    console.log("dada", data);
+  }, [data]);
   return (
     <PrivateRoute>
       <motion.div
@@ -49,36 +50,36 @@ function Profile() {
                   <Col md={6} className="text-center">
                     <Image
                       className="img-fluid my-3"
-                      src={user?.avatar ? user.avatar : profileImage}
+                      src={data.avatar ? data.avatar : profileImage}
                       rounded
                     />
                   </Col>
                 </Row>
 
-                <p className="text-center">{user?.name}</p>
-                <p className="text-center text-lead">{user?.email}</p>
-                <p className="text-center">{country && country[0]?.name}</p>
+                <p className="text-center">{data?.name}</p>
+                <p className="text-center text-lead">{data?.email}</p>
+                <p className="text-center">{data?.country?.name}</p>
 
                 <Row className="my-3">
                   <Col md={6}>
                     <p className="text-center text-muted">Member Since</p>
                     <p className="text-center ">
-                      {moment(user?.created_at).format("LL")}
+                      {moment(data?.created_at).format("LL")}
                     </p>
                   </Col>
                   <Col md={6}>
                     <p className="text-center text-muted">Total Point</p>
-                    <p className="text-center">{user?.point}</p>
+                    <p className="text-center">{data?.point ? data?.point : '--'}</p>
                   </Col>
 
                   <Col md={6}>
                     <p className="text-center text-muted">Total Spend</p>
-                    <p className="text-center">{user?.spend}</p>
+                    <p className="text-center">{data?.spend}</p>
                   </Col>
 
                   <Col md={6}>
                     <p className="text-center text-muted">User Id</p>
-                    <p className="text-center">{user?.id}</p>
+                    <p className="text-center">{data.id}</p>
                   </Col>
                 </Row>
 
@@ -98,36 +99,8 @@ function Profile() {
                     className="p-4 d-flex justify-content-center align-items-center shadow"
                     style={{ height: "150px" }}>
                     <div className="card-contents">
-                      <p className="text-center">21</p>
-                      <p className="text-muted text-center">Total Posts</p>
-                    </div>
-                  </Card>
-                </Col>
-                <Col md={3} className="mt-4 px-5 px-md-3">
-                  <Card
-                    className="p-4 d-flex justify-content-center align-items-center shadow"
-                    style={{ height: "150px" }}>
-                    <div className="card-contents">
-                      <p className="text-center">
-                        {user?.total_refer_user !== undefined
-                          ? user?.total_refer_user
-                          : "--"}
-                      </p>
-                      <p className="text-muted text-center">Total Refer</p>
-                    </div>
-                  </Card>
-                </Col>
-                <Col md={3} className="mt-4 px-5 px-md-3">
-                  <Card
-                    className="p-4 d-flex justify-content-center align-items-center shadow"
-                    style={{ height: "150px" }}>
-                    <div className="card-contents">
-                      <p className="text-center">
-                        {user?.point !== undefined ? user?.point : "--"}
-                      </p>
-                      <p className="text-muted text-center">
-                        Total Available Point
-                      </p>
+                      <p className="text-center">{data?.task_count}</p>
+                      <p className="text-muted text-center">Total Tasks</p>
                     </div>
                   </Card>
                 </Col>
@@ -138,8 +111,35 @@ function Profile() {
                     style={{ height: "150px" }}>
                     <div className="card-contents">
                       <p className="text-center">
-                        {user?.refer_code !== undefined
-                          ? user?.refer_code
+                        {data?.inroll_count !== undefined
+                          ? data?.inroll_count
+                          : "--"}
+                      </p>
+                      <p className="text-muted text-center">Task Completed</p>
+                    </div>
+                  </Card>
+                </Col>
+                <Col md={3} className="mt-4 px-5 px-md-3">
+                  <Card
+                    className="p-4 d-flex justify-content-center align-items-center shadow"
+                    style={{ height: "150px" }}>
+                    <div className="card-contents">
+                      <p className="text-center">
+                        {data?.used_refer !== null ? data?.used_refer : "--"}
+                      </p>
+                      <p className="text-muted text-center">Total Refer</p>
+                    </div>
+                  </Card>
+                </Col>
+
+                <Col md={3} className="mt-4 px-5 px-md-3">
+                  <Card
+                    className="p-4 d-flex justify-content-center align-items-center shadow"
+                    style={{ height: "150px" }}>
+                    <div className="card-contents">
+                      <p className="text-center">
+                        {data?.refer_code !== null
+                          ? data?.refer_code
                           : "--"}
                       </p>
                       <p className="text-muted text-center">User Refer Code</p>
@@ -247,4 +247,4 @@ function Profile() {
   );
 }
 
-export default Profile;
+export default UserProfile;

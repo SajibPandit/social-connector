@@ -17,6 +17,8 @@ import Perfromance from "./pages/Perfromance/Perfromance";
 import MyJobs from "./pages/MyJobs/MyJobs";
 import ReferalDetails from "./pages/ReferalDetails/ReferalDetails";
 import ProofDetails from "./pages/ProofDetails/ProofDetails";
+import CompletedTasks from "./pages/CompletedTasks/CompletedTasks";
+import UserProfile from "./pages/UserProfile/UserProfile";
 
 function App() {
   return (
@@ -38,9 +40,11 @@ function App() {
           <Route path="post/:id" element={<PostDetails />} />
           <Route path="proof/:id" element={<ProofDetails />} />
           <Route path="profile" element={<Profile />} />
+          <Route path="profile/:id" element={<UserProfile />} />
           <Route path="profile-settings" element={<ProfileSettings />} />
           <Route path="perfromance" element={<Perfromance />} />
           <Route path="my-jobs" element={<MyJobs />} />
+          <Route path="completed-tasks" element={<CompletedTasks />} />
           <Route path="referals" element={<ReferalDetails />} />
         </Route>
       </Routes>

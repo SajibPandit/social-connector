@@ -307,7 +307,10 @@ function Posts() {
                 <tr>
                   <th>Job Id</th>
                   <th>Title</th>
-                  <th>Payment</th>
+                  <th>Category</th>
+                  <th>Sub Category</th>
+                  <th>Country</th>
+                  <th>Amount</th>
                   <th>Done</th>
                   <th>Deadline</th>
                 </tr>
@@ -319,14 +322,20 @@ function Posts() {
                     key={i}
                     className="cursor-pointer my-5"
                     onClick={() => navigate(`/post/${post.id}`)}>
-                    <td>{post.id}</td>
-                    <td>{post.title}</td>
+                    <td className="text-nowrap">{post.id}</td>
+                    <td className="text-nowrap">{post.title}</td>
+                    <td className="text-nowrap">{post?.category?.name}</td>
+                    <td className="text-nowrap">{post?.task_type?.name}</td>
+                    <td className="text-nowrap">
+                      {post.country.name ? post.country.name : null}
+                    </td>
                     <td>{post.amount}</td>
-                    <td>
+                    <td className="text-nowrap">
                       {post.completed} / {post.quantity}
                     </td>
-                    <td>
-                      {moment(post.deadline).fromNow()}
+                    <td className="text-nowrap">
+                      {/* {post?.deadline} */}
+                      {moment(post?.deadline).format("LL")}
                       {/* const relativeTime = moment("2012-04-24").fromNow();
                       {post.deadline} {relativeTime} */}
                     </td>

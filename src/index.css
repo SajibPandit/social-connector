@@ -190,3 +190,16 @@ footer {
   text-align: justify;
   text-justify: inter-word;
 }
+
+/* Default styles for the image */
+.responsive-image {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Custom styles for larger screens */
+@media (min-width: 1200px) {
+  .responsive-image {
+    max-width: 50%; /* Adjust as needed */
+  }
+}

@@ -1,12 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { Col, Container, Form, Pagination, Row, Table } from "react-bootstrap";
-import { allPosts } from "../../utils/data";
+import {
+  Button,
+  Col,
+  Container,
+  Form,
+  Pagination,
+  Row,
+  Table,
+} from "react-bootstrap";
 import axios from "axios";
 import { getStatusLabel } from "../../utils/getStatusLabel";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 
-function Jobs() {
+function CompletedTasks() {
   const [data, setData] = useState([]);
   const [sortBy, setSortBy] = useState("");
   const [pagination, setPagination] = useState({ current_page: 1 });
@@ -27,7 +34,9 @@ function Jobs() {
       const parsedData = JSON.parse(storedUser);
       axios
         .get(
-          `${import.meta.env.VITE_BACKEND_URL}/task?${queryParams.toString()}`,
+          `${
+            import.meta.env.VITE_BACKEND_URL
+          }/done-job?${queryParams.toString()}`,
           {
             headers: {
               Authorization: `Bearer ${parsedData.token}`,
@@ -80,10 +89,10 @@ function Jobs() {
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}>
                     <option value="">Filter By</option>
-                    <option value="4">Running</option>
                     <option value="0">Pending</option>
-                    <option value="3">Completed</option>
-                    <option value="1">Incomplete</option>
+                    <option value="3">Finished</option>
+                    <option value="2">Under Review</option>
+                    <option value="1">Rejected</option>
                   </Form.Select>
                 </Form.Group>
               </div>
@@ -93,30 +102,37 @@ function Jobs() {
               <thead>
                 <tr>
                   <th>Job Id</th>
+                  <th>User Id</th>
                   <th>Title</th>
                   <th>Payment</th>
                   <th>Done</th>
                   <th>Status</th>
                   <th>Time</th>
+                  <th>Action</th>
                 </tr>
               </thead>
 
               <tbody>
                 {data.map((post, i) => (
-                  <tr
-                    key={i}
-                    className="cursor-pointer my-5"
-                    onClick={() => navigate(`/post/${post.id}`)}>
+                  <tr key={i} className="cursor-pointer my-5">
                     <td>{post.id}</td>
-                    <td>{post.title}</td>
-                    <td>{post.amount}</td>
-                    <td>
-                      {post.completed} / {post.quantity}
-                      {/* 50/100 */}
-                      {/* <ProgressBar now={60} label={`${60}%`} /> */}
+                    <td>{post?.user_id}</td>
+                    <td className="text-nowrap">{post.task.title}</td>
+                    <td>{post.inroll_point}P</td>
+                    <td className="text-nowrap">
+                      {post.task.completed} / {post.task.quantity}
                     </td>
                     <td>{getStatusLabel(post.status)}</td>
-                    <td>{moment(post.updated_at).fromNow()}</td>
+                    <td className="text-nowrap">
+                      {moment(post.updated_at).fromNow()}
+                    </td>
+                    <td className="text-nowrap">
+                      <Button
+                        variant="outline-secondary"
+                        onClick={() => navigate(`/proof/${post.id}`)}>
+                        View
+                      </Button>
+                    </td>
                   </tr>
                 ))}
                 {data.length === 0 && (
@@ -170,4 +186,4 @@ function Jobs() {
   );
 }
 
-export default Jobs;
+export default CompletedTasks;

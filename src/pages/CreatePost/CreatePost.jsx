@@ -75,10 +75,10 @@ function CreatePost() {
       .positive("Amount must be greater than zero")
       .required("Amount is required"),
     link: yup.string().url("Invalid URL format").required("Link is required"),
-    deadline: yup
-      .string()
-      .required("Deadline is required")
-      // .min(new Date(), "Deadline must be greater than now"),
+    deadline: yup.string().required("Deadline is required"),
+    // .test('is-future', 'Deadline must be greater than now', function(value) {
+    //   return value && value > new Date();
+    // }),
   });
 
   // Handle form submission
