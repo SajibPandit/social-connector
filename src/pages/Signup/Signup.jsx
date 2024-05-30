@@ -92,7 +92,7 @@ function Signup() {
       await validationSchema.validate(data, { abortEarly: false });
 
       // Make POST request to backend
-      const response = await axios.post(
+      let response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/register`,
         data
       );
@@ -173,7 +173,6 @@ function Signup() {
         note: "New register point given",
         type: 1,
       };
-      console.log(response?.data)
       await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/point-transaction`,
         registerBonus,
@@ -183,6 +182,8 @@ function Signup() {
           },
         }
       );
+
+      response.data.data.point = 100;
 
       // Set user data to ther local storage
       localStorage.setItem("zozoAuth", JSON.stringify(response?.data?.data));
@@ -234,7 +235,7 @@ function Signup() {
       style={{ minHeight: "50vh" }}>
       <Container className="mb-5 items-center">
         <Row>
-          <Col md={6} className="mt-5 mx-auto">
+          <Col md={6} sm={10} xs={12} className="mt-5 mx-auto">
             <Card className="p-3 p-md-5">
               <h2 className="mb-4 text-center">Signup Here</h2>
 

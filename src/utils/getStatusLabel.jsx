@@ -3,7 +3,7 @@ export const getStatusLabel = (status) => {
     case 0:
       return "Pending";
     case 1:
-      return "Declined";
+      return "Rejected";
     case 2:
       return "Review";
     case 3:

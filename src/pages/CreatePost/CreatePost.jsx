@@ -1,5 +1,13 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Container, Form, Button, Col, Row, Card } from "react-bootstrap";
+import {
+  Container,
+  Form,
+  Button,
+  Col,
+  Row,
+  Card,
+  Alert,
+} from "react-bootstrap";
 import { motion } from "framer-motion";
 import * as yup from "yup";
 import axios from "axios";
@@ -74,6 +82,21 @@ function CreatePost() {
       .number("Amount must be number type")
       .positive("Amount must be greater than zero")
       .required("Amount is required"),
+    // proof: yup
+    //   .array()
+    //   .of(
+    //     yup.object().shape({
+    //       question: yup.string().when("type", {
+    //         is: (type) => type && type.length > 0,
+    //         then: yup
+    //           .string()
+    //           .required("Question is required when type is provided"),
+    //         otherwise: yup.string(),
+    //       }),
+    //       type: yup.string(),
+    //     })
+    //   )
+    //   .min(1, "At least one object is required in the proof array"),
     link: yup.string().url("Invalid URL format").required("Link is required"),
     deadline: yup.string().required("Deadline is required"),
     // .test('is-future', 'Deadline must be greater than now', function(value) {
@@ -85,6 +108,21 @@ function CreatePost() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(data);
+    console.log(user);
+    console.log(user?.point);
+    if (Number(data?.quantity) * Number(data?.amount) > Number(user?.point)) {
+      setErrors((prev) => ({
+        ...prev,
+        short: `Based on your requirments, you need  ${
+          Number(data?.quantity) * Number(data?.amount)
+        } points to create a post. Please either reduce the quantity or the amount per task, or increase 
+        your point balance to proceed with creating the job post. You have ${
+          user?.point
+        } poins only`,
+      }));
+      window.scrollTo(0, 0);
+      return;
+    }
 
     try {
       // Validate form data using the schema
@@ -100,6 +138,23 @@ function CreatePost() {
         {
           ...data,
           user_id: parsedData.id,
+        },
+        {
+          headers: {
+            authorization: `Bearer ${parsedData.token}`,
+          },
+        }
+      );
+      let calculatedPoint = Number(data?.quantity) * Number(data?.amount);
+      //Update user point transcation value
+      await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/point-transaction`,
+        {
+          from_id: parsedData.id,
+          user_id: parsedData.id,
+          point: calculatedPoint,
+          note: `Deducted ${calculatedPoint} point as post create charge`,
+          type: 2,
         },
         {
           headers: {
@@ -164,8 +219,9 @@ function CreatePost() {
       transition={{ duration: 0.7 }}>
       <Container className="items-center">
         <Row>
-          <Col md={8} className="mt-5 mx-auto">
+          <Col md={8} sm={12} xs={12} className="mt-5 mx-auto">
             <Card className="p-3 p-md-5">
+              {errors?.short && <Alert variant="danger">{errors?.short}</Alert>}
               <h2 className="mb-4 text-center">Create a Post</h2>
               <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-3" controlId="formBasicEmail">

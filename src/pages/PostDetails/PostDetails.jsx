@@ -1,20 +1,45 @@
-import React, { useEffect, useState } from "react";
-import { Button, Card, Container, Form, Spinner } from "react-bootstrap";
+import React, { useContext, useEffect, useState } from "react";
+import {
+  Alert,
+  Button,
+  Card,
+  Col,
+  Container,
+  Form,
+  Row,
+  Spinner,
+} from "react-bootstrap";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
+import toast from "react-hot-toast";
 import { motion } from "framer-motion";
 import { FaHandPointRight } from "react-icons/fa";
 import { BsBoxArrowUpRight } from "react-icons/bs";
-// import PostSeenModal from "../../components/Modal/PostSeenModal";
 import TaskReportModal from "../../components/Modal/TaskReportModal";
 import JobRulesModal from "../../components/Modal/JobRulesModal";
 import HideJobModal from "../../components/Modal/HideJobModal";
+import UserContext from "../../contexts/UserContext";
 
 function PostDetails() {
   const [data, setData] = useState({});
   const { id } = useParams();
   const [post, setPost] = useState(null);
-  // const [show, setShow] = useState(false);
+  const [errors, setErrors] = useState({});
+  const { user } = useContext(UserContext);
+
+  const validateForm = () => {
+    const newErrors = {};
+    data.proof.forEach((item, i) => {
+      if (item.type === "text" && !item.title) {
+        newErrors[`title_${i}`] = "This field is required";
+      }
+      if (item.type === "image" && !item.image) {
+        newErrors[`image_${i}`] = "This field is required";
+      }
+    });
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   //Report Modal State
   const [showReport, setShowReport] = useState(false);
@@ -56,142 +81,59 @@ function PostDetails() {
     };
     fetchPost();
   }, [id]);
-
   useEffect(() => {
-    console.log(data);
-  }, [data]);
-
-  const proff = [
-    {
-      title: "Trigger effect when id changes",
-      type: "screenshot",
-      screenshot: "",
-      text: "",
-    },
-    {
-      title: "Trigger effect when id changes",
-      type: "text",
-      screenshot: "",
-      text: "",
-    },
-    {
-      title: "Trigger effect when id changes",
-      type: "text",
-      screenshot: "",
-      text: "",
-    },
-    {
-      title: "Trigger effect when id changes",
-      type: "screenshot",
-      screenshot: "",
-      text: "",
-    },
-  ];
+    console.log("user", user);
+  }, [user]);
 
   const handleProof = async (e) => {
     e.preventDefault();
+    if (validateForm()) {
+      //persing data form local storage
+      const storedUser = localStorage.getItem("zozoAuth");
+      const parsedData = JSON.parse(storedUser);
 
-    //persing data form local storage
-    const storedUser = localStorage.getItem("zozoAuth");
-    const parsedData = JSON.parse(storedUser);
+      // let formData = new FormData();
+      // setData({ ...data, user_id: parsedData.id, task_id: id });
 
-    // let formData = new FormData();
-    // setData({ ...data, user_id: parsedData.id, task_id: id });
-
-    let formData = new FormData();
-    formData.append("task_id", data.task_id);
-    console.log("rthrthrth", data.proof);
-    data.proof.forEach((item, index) => {
-      formData.append(`proof[${index}][title]`, item.title);
-      formData.append(`proof[${index}][image]`, item.image);
-    });
-    // formData.append("m", "er");
-    // for (let key in data) {
-    //   console.log(key);
-    //   if (Array.isArray(data[key])) {
-    //     data[key].forEach((item, index) => {
-    //       for (let subKey in item) {
-    //         formData.append(`${key}[${index}][${subKey}]`, item[subKey]);
-    //       }
-    //     });
-    //   } else {
-    //     formData.append(key, data[key]);
-    //   }
-    // }
-
-    // for (let pair of formData.entries()) {
-    //   console.log(pair[0] + ", " + pair[1]);
-    //   for (let key in pair) {
-    //     console.log(key + ": " + pair[key]);
-    //   }
-    // }
-
-    // for (let key in data) {
-    //   if (typeof data[key] === "object") {
-    //     if (Array.isArray(data[key])) {
-    //       data[key].forEach((item, index) => {
-    //         for (let subKey in item) {
-    //           formData.append(`${key}[${index}].${subKey}`, item[subKey]);
-    //         }
-    //       });
-    //     } else {
-    //       for (let subKey in data[key]) {
-    //         formData.append(`${key}.${subKey}`, data[key][subKey]);
-    //       }
-    //     }
-    //   } else {
-    //     formData.append(key, data[key]);
-    //   }
-    // }
-
-    // console.log(formData);
-
-    for (let pair of formData.entries()) {
-      console.log(pair[0] + ": " + pair[1]);
-    }
-
-    // let objectFromFormData = {};
-
-    // for (let pair of formData.entries()) {
-    //   const key = pair[0];
-    //   const value = pair[1];
-
-    //   // Check if the key already exists in the object
-    //   if (objectFromFormData.hasOwnProperty(key)) {
-    //     // If the key already exists and its value is an array, push the new value
-    //     if (Array.isArray(objectFromFormData[key])) {
-    //       objectFromFormData[key].push(value);
-    //     } else {
-    //       // If the key already exists but its value is not an array, convert it to an array
-    //       objectFromFormData[key] = [objectFromFormData[key], value];
-    //     }
-    //   } else {
-    //     // If the key doesn't exist in the object, simply add the key-value pair
-    //     objectFromFormData[key] = value;
-    //   }
-    // }
-
-    // console.log("yyyyyyyyyyy", objectFromFormData);
-
-    try {
-      // Perform form submission logic here (sending data to server)
-      console.log("submit data", {
-        ...data,
-        user_id: parsedData.id,
-        task_id: id,
+      let formData = new FormData();
+      formData.append("task_id", data.task_id);
+      data.proof.forEach((item, index) => {
+        formData.append(`proof[${index}][description]`, item.question);
+        formData.append(`proof[${index}][type]`, item.type);
+        formData.append(`proof[${index}][title]`, item.title);
+        formData.append(`proof[${index}][image]`, item.image);
       });
-      await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/task/inroll`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${parsedData.token}`,
-          },
-        }
-      );
-    } catch (error) {
-      console.log(error);
+
+      // Log the FormData content
+      const formDataEntries = [];
+      for (let pair of formData.entries()) {
+        formDataEntries.push({ [pair[0]]: pair[1] });
+      }
+      console.log("FormData:", JSON.stringify(formDataEntries, null, 2));
+      try {
+        // Perform form submission logic here (sending data to server)
+        console.log("submit data", {
+          ...data,
+          user_id: parsedData.id,
+          task_id: id,
+        });
+        const response = await axios.post(
+          `${import.meta.env.VITE_BACKEND_URL}/task/inroll`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${parsedData.token}`,
+            },
+          }
+        );
+        toast.success(response.data.message);
+      } catch (error) {
+        console.log(error);
+        toast.error(error.response.data.message);
+      }
+    } else {
+      toast.error("Please fill all the fields");
     }
   };
 
@@ -330,33 +272,37 @@ function PostDetails() {
                 Click Here to Go the Post Link
               </a>
             </div>
-            <Card
-              className="d-flex justify-content-center align-items-start mt-3 py-3"
-              style={{ backgroundColor: "#eee" }}>
-              <p className="my-auto px-4">
-                <span className="mx-3">
-                  <FaHandPointRight />
-                </span>
-                Submit your proofs below
-              </p>
-            </Card>
+            {user?.id !== post?.created_by && (
+              <Card
+                className="d-flex justify-content-center align-items-start mt-3 py-3"
+                style={{ backgroundColor: "#eee" }}>
+                <p className="my-auto px-4">
+                  <span className="mx-3">
+                    <FaHandPointRight />
+                  </span>
+                  Submit your proofs below
+                </p>
+              </Card>
+            )}
+
             <>
               <div>
-                {/* Map through the proof array and render form fields for each proof item */}
                 {data.proof.map((item, i) => (
                   <div key={i} className="my-3">
                     <h5 className="text-muted">{item.question}</h5>
                     {item.type === "text" ? (
                       <Form.Group className="my-3" controlId={`textarea_${i}`}>
                         <Form.Control
+                          required
                           size="lg"
                           placeholder="Give answer"
                           as="textarea"
+                          disabled={user?.id === post?.created_by}
                           rows={3}
                           value={item.title || ""}
                           onChange={(e) =>
                             handleProofChange(i, "title", e.target.value)
-                          } // Update title field
+                          }
                         />
                       </Form.Group>
                     ) : (
@@ -375,10 +321,12 @@ function PostDetails() {
                         <Form.Group className="my-3" controlId={`file_${i}`}>
                           <Form.Control
                             size="lg"
+                            required
                             type="file"
+                            disabled={user?.id === post?.created_by}
                             onChange={(e) =>
                               handleProofChange(i, "image", e.target.files[0])
-                            } // Update image field
+                            }
                           />
                         </Form.Group>
                       </>
@@ -386,22 +334,36 @@ function PostDetails() {
                   </div>
                 ))}
               </div>
-
-              {/* {Object.keys(post?.proof).map((key) => {
-                const { question, type } = post.proof[key];
-                return (
-                  
-                );
-              })} */}
             </>
-            <div className="action-buttons d-flex justify-content-between align-items-center py-4">
-              <Button variant="outline-secondary" onClick={() => navigate(-1)}>
-                Go Back
-              </Button>
-              <Button variant="success" onClick={handleProof}>
-                Submit Task
-              </Button>
-            </div>
+            {user ? (
+              <>
+                {user?.id !== post?.created_by && (
+                  <div className="action-buttons d-flex justify-content-between align-items-center py-4">
+                    <Button
+                      variant="outline-secondary"
+                      onClick={() => navigate(-1)}>
+                      Go Back
+                    </Button>
+                    <Button
+                      variant="success"
+                      disabled={user?.id === post?.created_by}
+                      onClick={handleProof}>
+                      Submit Task
+                    </Button>
+                  </div>
+                )}
+              </>
+            ) : (
+              <>
+                <Row>
+                  <Col md={6} xs={12} className="mx-auto py-3">
+                    <Alert variant="danger" className="text-center">
+                      Please login to submit your proof
+                    </Alert>
+                  </Col>
+                </Row>
+              </>
+            )}
           </>
         )}
 

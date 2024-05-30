@@ -4,7 +4,7 @@ import UserContext from "../../contexts/UserContext";
 import axios from "axios";
 import toast from "react-hot-toast";
 
-function RejectTaskModal({ show, handleClose, proofId }) {
+function RejectTaskModal({ show, handleClose, proofId, setRefetch }) {
   const [data, setData] = useState({});
   const { user } = useContext(UserContext);
 
@@ -13,22 +13,28 @@ function RejectTaskModal({ show, handleClose, proofId }) {
     const storedUser = localStorage.getItem("zozoAuth");
     const parsedData = JSON.parse(storedUser);
 
-    const responsedata = await axios.post(
-      `${import.meta.env.VITE_BACKEND_URL}/job-status`,
-      {
-        ...data,
-        user_id: parsedData.id,
-        status: 1,
-        id: proofId,
-      },
-      {
-        headers: {
-          authorization: `Bearer ${parsedData.token}`,
+    try {
+      const responsedata = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/job-status`,
+        {
+          ...data,
+          user_id: parsedData.id,
+          status: 1,
+          id: proofId,
         },
-      }
-    );
-    toast.success(responsedata.data.message);
-    handleClose();
+        {
+          headers: {
+            authorization: `Bearer ${parsedData.token}`,
+          },
+        }
+      );
+      toast.success("Proof rejected");
+      setRefetch(true);
+      handleClose();
+    } catch (error) {
+      toast.success(error.response.data.message);
+      handleClose();
+    }
   };
   return (
     <Modal
